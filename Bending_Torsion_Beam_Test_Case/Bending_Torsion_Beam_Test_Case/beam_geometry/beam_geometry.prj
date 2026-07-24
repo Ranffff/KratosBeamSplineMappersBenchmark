@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gid version="15.0">
+  <pre>
+    <layer_to_use name="Layer0"/>
+    <groups>
+      <group id="1" name="beam" color="#ffaaaaff" allowed_types="#32" allowed_element_types="#7fe"/>
+      <group id="2" name="Dirichlet_BC" color="#0000ffff" allowed_types="#77" allowed_element_types="#7fe"/>
+      <group id="3" name="Total" color="#ff00ffff" parent_id="2" state="hidden"/>
+      <group id="4" name="Total - 0" color="#00ffffff" parent_id="2" state="hidden"/>
+      <group id="5" name="Point_Load" color="#a60021ff" allowed_types="#71" allowed_element_types="#7fe"/>
+      <group id="6" name="Total" color="#00ff00ff" parent_id="5" state="hidden"/>
+    </groups>
+    <entities_groups>
+      <entities_group name="points">
+        <vector name="entity_ids" length="2" type="integer">1 2</vector>
+        <vector name="entity_num_groups" length="2" type="ushort">3 2</vector>
+        <vector name="entity_groups" length="5" type="ushort">2 3 4 5 6</vector>
+      </entities_group>
+      <entities_group name="lines">
+        <vector name="entity_ids" length="1" type="integer">1</vector>
+        <vector name="entity_num_groups" length="1" type="ushort">1</vector>
+        <vector name="entity_groups" length="1" type="ushort">1</vector>
+      </entities_group>
+      <entities_group name="nodes">
+        <vector name="entity_ids" length="19" type="integer">1:19</vector>
+        <vector name="entity_num_groups" length="19" type="ushort">3 1x17 4</vector>
+        <vector name="entity_groups" length="24" type="ushort">5 6 1x18 2 3 4 1</vector>
+      </entities_group>
+      <entities_group name="elements">
+        <vector name="entity_ids" length="18" type="integer">1:18</vector>
+        <vector name="entity_num_groups" length="18" type="ushort">1x18</vector>
+        <vector name="entity_groups" length="18" type="ushort">1x18</vector>
+      </entities_group>
+    </entities_groups>
+  </pre>
+</gid>

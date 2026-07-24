@@ -1,0 +1,31 @@
+================================================================================
+SMALL-ROTATION ANALYTICAL MAPPER COMPARISON
+================================================================================
+
+[CASE CONFIGURATION]
+  test_case              : torsion_x
+  tip_axial_displacement : 0.0
+  tip_displacement_y     : 0.0
+  tip_displacement_z     : 0.0
+  tip_bending_rotation_y : 0.0
+  tip_bending_rotation_z : 0.0
+  tip_torsion            : 0.03
+  analytical_reference   : u_surface = u_beam + theta cross r
+  beam_mdpa              : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+  surface_mesh           : 2x20, programmatic
+  vtk_output_path        : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Small_Rotation_Analytical_Comparison_2x20/torsion_x
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+[WARNING] BeamSplineMapper: No pivoting direct linear solver is registered. Using AMGCL GMRES fallback.
+
+[MESH]
+  beam    : 19 nodes, 18 elements
+  surface : 168 nodes, 160 elements
+
+[ERROR SUMMARY]
+  mapper                             RMSE    normalized RMSE    maximum error
+  ------------------------ -------------- ------------------ ----------------
+  beam_spline_mapper       7.37833828e-05        1.19009326%   3.18190097e-04
+  linear_beam_mapper       7.37833828e-05        1.19009326%   3.18190097e-04

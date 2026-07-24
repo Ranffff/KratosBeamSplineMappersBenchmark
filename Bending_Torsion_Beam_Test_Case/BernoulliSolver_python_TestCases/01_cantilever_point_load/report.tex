@@ -1,0 +1,34 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{amsmath}
+\begin{document}
+\section*{Cantilever beam with a free-end point load}
+A length 10 m cantilever is fixed at the left end and loaded by a downward point force $P=-1000$ N at the free end. The material and section data are $E=2.0690e+11$ Pa, $\nu=0.29$, $G=8.0194e+10$ Pa, $I_z=1$ m$^4$, $J=1$ m$^4$, and $L=10$ m.
+
+\subsection*{Configuration}
+\begin{center}
+\begin{tikzpicture}[scale=1.0]
+\draw[thick] (0,0)--(5,0);\draw[very thick] (0,-0.45)--(0,0.45);\foreach \y in {-0.4,-0.25,...,0.4}{\draw (-0.18,\y-0.08)--(0,\y);}\draw[->,thick] (5,0.9)--(5,0.15) node[midway,right] {$P$};\node[below] at (2.5,0) {$L$};
+\end{tikzpicture}
+\end{center}
+
+\subsection*{Analytical Reference}
+$v(L)=PL^3/(3EI_z)$ and $\theta_z(L)=PL^2/(2EI_z)$.
+
+\subsection*{Numerical Comparison}
+\begin{center}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.18\linewidth}|r|r|r|r|r|}
+\hline
+Quantity & Analytical & C++ & Python & Python vs. analytical & Python vs. C++ \\
+\hline
+$v_y(L)$ & -1.61108426e-06 & -1.61108430e-06 & -1.61108430e-06 & 2.501e-06\% & 0.000e+00\% \\
+$\theta_z(L)$ & -2.41662639e-07 & -2.41662630e-07 & -2.41662630e-07 & 3.706e-06\% & 0.000e+00\% \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Evaluation}
+The Python and C++ results are numerically identical to the precision written in the VTK files for the selected critical quantities. The remaining discrepancy with the analytical expression is governed by the finite element discretization and by the equivalent nodal loading representation where applicable.
+\end{document}

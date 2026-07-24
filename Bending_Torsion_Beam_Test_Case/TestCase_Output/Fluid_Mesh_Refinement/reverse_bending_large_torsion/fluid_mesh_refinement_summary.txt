@@ -1,0 +1,21 @@
+
+# run_started: 2026-06-21T16:46:20
+# study_mapper: beam_spline_mapper
+# test_case: reverse_bending_large_torsion
+# tip_axial_displacement: -0.25
+# cubic_tip_displacement_y: -1.1
+# cubic_tip_displacement_z: 1.3
+# tip_bending_rotation_y: 0.4pi
+# tip_bending_rotation_z: -0.45pi
+# tip_torsion: -1.5pi
+# study_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# reference_mapper: beam_mapper(use_corotation=true), programmatic fluid mesh 16x160
+# reference_beam: programmatic uniform mesh, 320 divisions
+# rmse_definition: Wang Eq. (5.30)
+# convergence_order: log(rmse_h/rmse_h_over_2)/log(2)
+mesh_label cross_section_divisions axial_divisions cross_section_element_size axial_element_size characteristic_mesh_size surface_nodes surface_elements rmse reference_rmse normalized_rmse_percent convergence_order
+1x10 1 10 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 44 40 4.1902899184399389e-01 2.7129554941731193e+00 15.44547976 nan
+2x20 2 20 5.0000000000000000e-01 5.0000000000000000e-01 5.0000000000000000e-01 168 160 3.5792472699511702e-01 2.6138194378102098e+00 13.69355212 0.22739385
+4x40 4 40 2.5000000000000000e-01 2.5000000000000000e-01 2.5000000000000000e-01 656 640 3.4000605029232989e-01 2.5665785970873389e+00 13.24744353 0.07409580
+8x80 8 80 1.2500000000000000e-01 1.2500000000000000e-01 1.2500000000000000e-01 2592 2560 3.3471195635412554e-01 2.5436488978018845e+00 13.15873258 0.02264033
+16x160 16 160 6.2500000000000000e-02 6.2500000000000000e-02 6.2500000000000000e-02 10304 10240 3.3177211425129899e-01 2.5323636604986133e+00 13.10128239 0.01272746

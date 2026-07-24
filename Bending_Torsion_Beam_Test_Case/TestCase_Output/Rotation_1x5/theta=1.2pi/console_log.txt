@@ -1,0 +1,38 @@
+STRUCTURE TO SURFACE BEAM MAPPER COMPARISON
+kinematics_mode: rotation
+error_type: normalized_rmse
+tip_rotation: 3.7699111843077517
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+vtk_output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Rotation_1x5/theta=1.2pi
+
+mesh: beam=19 nodes/18 elems, surface=24 nodes/20 elems
+reference_mapper: beam_mapper(use_corotation=true)
+selected_error: normalized RMSE
+  reference_scale: 5.5715174152063
+  spline_error_to_corotation: 0.2658183987281372 percent: 4.771023384089962
+  linear_error_to_corotation: 0.26581839872813734 percent: 4.771023384089965
+max_nodal_norms_auxiliary:
+  corotation_displacement: 19.756250502939295 node: 23
+  spline_vs_linear: 3.908757710754708e-14 node: 23
+  spline_vs_corotation: 1.026846171892022 node: 20
+  linear_vs_corotation: 1.0268461718920323 node: 20
+samples: node_id x y z | spline | linear | corotation
+3 0.0 -0.5 -0.5 | (-2.4424906541753444e-15, -5.329070518200751e-15, 0.0) | (0.0, 0.0, 0.0) | (0.0, -1.1102230246251565e-16, 0.0)
+1 0.0 -0.5 0.5 | (-2.4424906541753444e-15, -5.329070518200751e-15, 0.0) | (0.0, 0.0, 0.0) | (0.0, -1.1102230246251565e-16, 0.0)
+4 0.0 0.5 -0.5 | (2.4424906541753444e-15, -5.329070518200751e-15, 0.0) | (0.0, 0.0, 0.0) | (0.0, 1.1102230246251565e-16, 0.0)
+2 0.0 0.5 0.5 | (2.4424906541753444e-15, -5.329070518200751e-15, 0.0) | (0.0, 0.0, 0.0) | (0.0, 1.1102230246251565e-16, 0.0)
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+[WARNING] BeamSplineMapper: No pivoting direct linear solver is registered. Using AMGCL GMRES fallback.

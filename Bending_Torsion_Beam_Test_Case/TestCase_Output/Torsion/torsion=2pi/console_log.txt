@@ -1,0 +1,31 @@
+STRUCTURE TO SURFACE BEAM MAPPER COMPARISON
+kinematics_mode: torsion
+tip_torsion: 6.283185307179586
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+vtk_output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Torsion/torsion=2pi
+
+mesh: beam=1001 nodes/1000 elems, surface=24 nodes/20 elems
+reference_mapper: beam_mapper(use_corotation=true)
+max_norms:
+  corotation_displacement: 1.3449970239279145 node: 15
+  spline_vs_linear: 0.0 node: None
+  spline_error_to_corotation: 2.7755575615628914e-16 node: 23 percent: 2.0636161360842148e-14
+  linear_error_to_corotation: 2.7755575615628914e-16 node: 23 percent: 2.0636161360842148e-14
+samples: node_id x y z | spline | linear | corotation
+3 0.0 -0.5 -0.5 | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+1 0.0 -0.5 0.5 | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+4 0.0 0.5 -0.5 | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+2 0.0 0.5 0.5 | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+ModelPartIO:   [Reading Nodes    : 1001 nodes read]
+ModelPartIO:   [Reading Elements : 1000 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Total Lines Read : 5025]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]

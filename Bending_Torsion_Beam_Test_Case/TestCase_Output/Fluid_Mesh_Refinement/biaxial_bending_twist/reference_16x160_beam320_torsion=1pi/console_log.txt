@@ -1,0 +1,23 @@
+================================================================================
+CO-ROTATIONAL FINEST-MESH REFERENCE
+================================================================================
+
+[CASE CONFIGURATION]
+  reference_mapper         : beam_mapper(use_corotation=true)
+  beam_divisions           : 320
+  beam_generation          : programmatic uniform line
+  fluid_mesh               : 16x160
+  surface_generation       : programmatic structured square tube
+  test_case                : biaxial_bending_twist
+  tip_axial_displacement   : 0.2
+  cubic_tip_displacement_y : 0.8
+  cubic_tip_displacement_z : -0.6
+  tip_bending_rotation_y   : -0.25pi
+  tip_bending_rotation_z   : 0.35pi
+  tip_torsion              : 1pi
+  reference_vtk            : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Fluid_Mesh_Refinement/biaxial_bending_twist/reference_16x160_beam320_torsion=1pi/reference_corotation_mapped_surface_Parts_Shell_wet_surface_0_0.vtk
+  vtk_output_path          : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Fluid_Mesh_Refinement/biaxial_bending_twist/reference_16x160_beam320_torsion=1pi
+
+[MESH]
+  beam    : 321 nodes, 320 elements
+  surface : 10304 nodes, 10240 elements

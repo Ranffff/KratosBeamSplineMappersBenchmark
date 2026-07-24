@@ -1,0 +1,38 @@
+Solved reduced system with 59 free DOFs.
+BERNOULLI SOLVER DEBUG NODAL SOLUTION
+node_id, x, y, z, displacement_x, displacement_y, displacement_z, rotation_x, rotation_y, rotation_z
+1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -2.0138553246335103e-07
+2 1.0 0.0 0.0 0.0 -1.9755920734654771e-07 0.0 0.0 0.0 -1.9010794264540406e-07
+3 2.0 0.0 0.0 0.0 -3.737715482519807e-07 0.0 0.0 0.0 -1.5949734171097498e-07
+4 3.0 0.0 0.0 0.0 -5.117206379893772e-07 0.0 0.0 0.0 -1.143869824391844e-07
+5 4.0 0.0 0.0 0.0 -5.993233446109359e-07 0.0 0.0 0.0 -5.961011760915261e-08
+6 5.0 0.0 0.0 0.0 -6.293297889479755e-07 0.0 0.0 0.0 5.607720339794012e-23
+7 6.0 0.0 0.0 0.0 -5.993233446109358e-07 0.0 0.0 0.0 5.961011760915284e-08
+8 7.0 0.0 0.0 0.0 -5.117206379893771e-07 0.0 0.0 0.0 1.143869824391844e-07
+9 8.0 0.0 0.0 0.0 -3.737715482519807e-07 0.0 0.0 0.0 1.5949734171097471e-07
+10 9.0 0.0 0.0 0.0 -1.975592073465479e-07 0.0 0.0 0.0 1.90107942645404e-07
+11 10.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 2.0138553246335145e-07
+Read 11 nodes and 10 elements.
+Wrote VTK output to: Bending_Torsion_Beam_Test_Case/BernoulliSolver_python_TestCases/03_simply_supported_udl
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."0"-mapping/beam_splines-51819e03a4-Release-x86_64
+           Compiled for GNU/Linux and Python3.10 with Clang-14.0
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 32.
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+ModelPartIO:   [Reading Nodes    : 11 nodes read]
+ModelPartIO:   [Reading Elements : 10 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Total Lines Read : 61]
+Deregistering KratosMultiphysics
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication

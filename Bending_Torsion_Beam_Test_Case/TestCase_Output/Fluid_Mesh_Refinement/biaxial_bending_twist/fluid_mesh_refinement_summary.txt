@@ -1,0 +1,42 @@
+
+# run_started: 2026-06-18T14:32:37
+# study_mapper: beam_spline_mapper
+# test_case: biaxial_bending_twist
+# tip_axial_displacement: 0.2
+# cubic_tip_displacement_y: 0.8
+# cubic_tip_displacement_z: -0.6
+# tip_bending_rotation_y: -0.25pi
+# tip_bending_rotation_z: 0.35pi
+# tip_torsion: 1pi
+# study_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# reference_mapper: beam_mapper(use_corotation=true), programmatic fluid mesh 16x160
+# reference_beam: programmatic uniform mesh, 320 divisions
+# rmse_definition: Wang Eq. (5.30)
+# convergence_order: log(rmse_h/rmse_h_over_2)/log(2)
+mesh_label cross_section_divisions axial_divisions cross_section_element_size axial_element_size characteristic_mesh_size surface_nodes surface_elements rmse reference_rmse normalized_rmse_percent convergence_order
+1x10 1 10 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 44 40 2.5099878421093252e-01 2.0645697653802193e+00 12.15743776 nan
+2x20 2 20 5.0000000000000000e-01 5.0000000000000000e-01 5.0000000000000000e-01 168 160 2.1272300208780481e-01 1.9814224460165084e+00 10.73587324 0.23870433
+4x40 4 40 2.5000000000000000e-01 2.5000000000000000e-01 2.5000000000000000e-01 656 640 2.0137411496933408e-01 1.9440009514585037e+00 10.35874570 0.07909779
+8x80 8 80 1.2500000000000000e-01 1.2500000000000000e-01 1.2500000000000000e-01 2592 2560 1.9792131823112774e-01 1.9264255110509354e+00 10.27401875 0.02495123
+16x160 16 160 6.2500000000000000e-02 6.2500000000000000e-02 6.2500000000000000e-02 10304 10240 1.9676645766161344e-01 1.9179340097169373e+00 10.25929238 0.00844271
+
+# run_started: 2026-06-21T16:20:25
+# study_mapper: beam_spline_mapper
+# test_case: biaxial_bending_twist
+# tip_axial_displacement: 0.2
+# cubic_tip_displacement_y: 0.8
+# cubic_tip_displacement_z: -0.6
+# tip_bending_rotation_y: -0.25pi
+# tip_bending_rotation_z: 0.35pi
+# tip_torsion: 1pi
+# study_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# reference_mapper: beam_mapper(use_corotation=true), programmatic fluid mesh 16x160
+# reference_beam: programmatic uniform mesh, 320 divisions
+# rmse_definition: Wang Eq. (5.30)
+# convergence_order: log(rmse_h/rmse_h_over_2)/log(2)
+mesh_label cross_section_divisions axial_divisions cross_section_element_size axial_element_size characteristic_mesh_size surface_nodes surface_elements rmse reference_rmse normalized_rmse_percent convergence_order
+1x10 1 10 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 44 40 2.5099878867564113e-01 2.0645697753157122e+00 12.15743792 nan
+2x20 2 20 5.0000000000000000e-01 5.0000000000000000e-01 5.0000000000000000e-01 168 160 2.1272300448198309e-01 1.9814224472391988e+00 10.73587335 0.23870434
+4x40 4 40 2.5000000000000000e-01 2.5000000000000000e-01 2.5000000000000000e-01 656 640 2.0137411560572077e-01 1.9440009492506396e+00 10.35874574 0.07909781
+8x80 8 80 1.2500000000000000e-01 1.2500000000000000e-01 1.2500000000000000e-01 2592 2560 1.9792131711373581e-01 1.9264255114411837e+00 10.27401869 0.02495125
+16x160 16 160 6.2500000000000000e-02 6.2500000000000000e-02 6.2500000000000000e-02 10304 10240 1.9676645700435921e-01 1.9179340100505078e+00 10.25929234 0.00844270

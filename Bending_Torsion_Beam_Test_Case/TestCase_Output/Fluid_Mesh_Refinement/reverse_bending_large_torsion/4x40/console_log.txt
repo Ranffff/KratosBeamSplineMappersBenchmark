@@ -1,0 +1,35 @@
+================================================================================
+BEAM SPLINE FLUID-MESH REFINEMENT
+================================================================================
+
+[CASE CONFIGURATION]
+  mapper                   : beam_spline_mapper
+  reference_mapper         : beam_mapper(use_corotation=true), 16x160
+  beam_mdpa                : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+  fluid_mesh               : 4x40
+  test_case                : reverse_bending_large_torsion
+  tip_axial_displacement   : -0.25
+  cubic_tip_displacement_y : -1.1
+  cubic_tip_displacement_z : 1.3
+  tip_bending_rotation_y   : 0.4pi
+  tip_bending_rotation_z   : -0.45pi
+  tip_torsion              : -1.5pi
+  vtk_output_path          : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Fluid_Mesh_Refinement/reverse_bending_large_torsion/4x40
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+[WARNING] BeamSplineMapper: No pivoting direct linear solver is registered. Using AMGCL GMRES fallback.
+
+[MESH]
+  beam                       : 19 nodes, 18 elements
+  surface                    : 656 nodes, 640 elements
+  axial_element_size         : 0.25
+  cross_section_element_size : 0.25
+  characteristic_mesh_size   : 0.25
+
+[ERROR SUMMARY]
+  rmse_eq_5_30      : 3.40006050e-01
+  reference_rmse    : 2.56657860e+00
+  normalized_rmse   : 13.24744353%
+  convergence_order : 0.07409580

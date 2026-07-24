@@ -1,0 +1,41 @@
+
+# run_started: 2026-06-15T12:50:44
+# study_mapper: beam_spline_mapper
+# study_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# reference_mapper: beam_mapper(use_corotation=true), fluid_surface_mesh_10x100.mdpa
+# reference_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry.mdpa
+# rmse_definition: Wang Eq. (5.30)
+# convergence_order: log(rmse_h/rmse_h_over_2)/log(2)
+mesh_label cross_section_divisions axial_divisions cross_section_element_size axial_element_size characteristic_mesh_size surface_nodes surface_elements rmse reference_rmse normalized_rmse_percent convergence_order
+1x10 1 10 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 44 40 3.2607836353829249e-11 2.1904761416720460e+00 0.00000000 nan
+2x20 2 20 5.0000000000000000e-01 5.0000000000000000e-01 5.0000000000000000e-01 168 160 2.5608721567444143e-11 2.1139211923861687e+00 0.00000000 0.34858348
+4x40 4 40 2.5000000000000000e-01 2.5000000000000000e-01 2.5000000000000000e-01 656 640 7.9343483388972380e-05 2.0758516603406996e+00 0.00382221 -21.56304507
+8x80 8 80 1.2500000000000000e-01 1.2500000000000000e-01 1.2500000000000000e-01 2592 2560 8.2284741145790979e-05 2.0568519763764783e+00 0.00400052 -0.05251319
+
+# run_started: 2026-06-15T13:00:54
+# study_mapper: beam_spline_mapper
+# study_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# reference_mapper: beam_mapper(use_corotation=true), programmatic fluid mesh 16x160
+# reference_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry.mdpa
+# rmse_definition: Wang Eq. (5.30)
+# convergence_order: log(rmse_h/rmse_h_over_2)/log(2)
+mesh_label cross_section_divisions axial_divisions cross_section_element_size axial_element_size characteristic_mesh_size surface_nodes surface_elements rmse reference_rmse normalized_rmse_percent convergence_order
+1x10 1 10 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 44 40 3.2607836353829249e-11 2.1904761416720460e+00 0.00000000 nan
+2x20 2 20 5.0000000000000000e-01 5.0000000000000000e-01 5.0000000000000000e-01 168 160 2.5608721567444143e-11 2.1139211923861687e+00 0.00000000 0.34858348
+4x40 4 40 2.5000000000000000e-01 2.5000000000000000e-01 2.5000000000000000e-01 656 640 2.2874329486105375e-11 2.0758115694786170e+00 0.00000000 0.16290578
+8x80 8 80 1.2500000000000000e-01 1.2500000000000000e-01 1.2500000000000000e-01 2592 2560 6.0765977455530980e-02 2.0539719442291990e+00 2.95846190 -31.30688719
+16x160 16 160 6.2500000000000000e-02 6.2500000000000000e-02 6.2500000000000000e-02 10304 10240 6.2902721961231589e-02 2.0436518899939053e+00 3.07795678 -0.04985866
+
+# run_started: 2026-06-15T13:14:29
+# study_mapper: beam_spline_mapper
+# study_beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# reference_mapper: beam_mapper(use_corotation=true), programmatic fluid mesh 16x160
+# reference_beam: programmatic uniform mesh, 1280 divisions
+# rmse_definition: Wang Eq. (5.30)
+# convergence_order: log(rmse_h/rmse_h_over_2)/log(2)
+mesh_label cross_section_divisions axial_divisions cross_section_element_size axial_element_size characteristic_mesh_size surface_nodes surface_elements rmse reference_rmse normalized_rmse_percent convergence_order
+1x10 1 10 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 44 40 5.9306651181455406e-13 2.1904761416734919e+00 0.00000000 nan
+2x20 2 20 5.0000000000000000e-01 5.0000000000000000e-01 5.0000000000000000e-01 168 160 4.9437735175275830e-13 2.1139211923873300e+00 0.00000000 0.26258126
+4x40 4 40 2.5000000000000000e-01 2.5000000000000000e-01 2.5000000000000000e-01 656 640 4.6472805779296212e-13 2.0758115694796540e+00 0.00000000 0.08922590
+8x80 8 80 1.2500000000000000e-01 1.2500000000000000e-01 1.2500000000000000e-01 2592 2560 4.5502880594641840e-13 2.0568007568208553e+00 0.00000000 0.03042887
+16x160 16 160 6.2500000000000000e-02 6.2500000000000000e-02 6.2500000000000000e-02 10304 10240 4.5143232235947859e-13 2.0473066184196989e+00 0.00000000 0.01144816

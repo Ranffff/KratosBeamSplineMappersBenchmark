@@ -1,0 +1,498 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  breaklines=true,
+  frame=single
+}
+
+\title{Structure-to-Surface Beam Mapper Comparison 中理论解的构造}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{问题背景}
+
+当前测试入口为
+\begin{center}
+\texttt{Bending\_Torsion\_Beam\_Test\_Case/run\_structure\_to\_surface\_mapper\_comparison.py}.
+\end{center}
+\noindent\emph{The current test entry point is
+\texttt{Bending\_Torsion\_Beam\_Test\_Case/run\_structure\_to\_surface\_mapper\_comparison.py}.}
+
+该脚本使用一个梁中心线模型作为 origin model part，使用包围梁的 surface mesh 作为 destination model part。
+目标是比较以下三种映射结果在 surface mesh 上的准确度：
+\par\noindent\emph{The script uses a beam centerline model as the origin model part and the surrounding surface mesh as the destination model part.
+The purpose is to compare the accuracy of the following three mapping results on the surface mesh:}
+\begin{itemize}
+  \item \texttt{beam\_spline\_mapper};
+  \item \texttt{beam\_mapper} with \texttt{use\_corotation = false};
+  \item \texttt{beam\_mapper} with \texttt{use\_corotation = true}.
+\end{itemize}
+
+为了评价映射误差，需要先在每个 surface node 上构造一个解析参考位移，脚本中称为
+\texttt{expected\_surface}。这个参考值不是由 mapper 得到，而是由梁中心线解析运动和截面有限转角直接计算得到。
+\par\noindent\emph{To evaluate the mapping error, an analytical reference displacement must first be constructed at every surface node.
+In the script this reference field is called \texttt{expected\_surface}.
+It is not obtained from any mapper; instead, it is computed directly from the analytical beam-centerline motion and the finite rotation of the beam cross-section.}
+
+\section{几何描述}
+
+梁中心线位于初始构型中的全局 \(x\) 轴上：
+\par\noindent\emph{In the initial configuration, the beam centerline lies on the global \(x\)-axis:}
+\begin{equation}
+  \bm{X}_c(x) =
+  \begin{bmatrix}
+    x \\ 0 \\ 0
+  \end{bmatrix},
+  \qquad x \in [0,L],
+  \qquad L = 10.
+\end{equation}
+
+surface mesh 上任意一点的初始坐标记为
+\par\noindent\emph{The initial coordinates of an arbitrary point on the surface mesh are denoted as}
+\begin{equation}
+  \bm{X}_s =
+  \begin{bmatrix}
+    x \\ y \\ z
+  \end{bmatrix}.
+\end{equation}
+
+由于该 surface mesh 是围绕梁中心线生成的，点 \(\bm{X}_s\) 相对于同一 \(x\) 截面中心点的初始偏置向量为
+\par\noindent\emph{Since the surface mesh is generated around the beam centerline, the initial offset vector of point \(\bm{X}_s\) with respect to the center point of the same \(x\)-section is}
+\begin{equation}
+  \bm{r}_0 =
+  \bm{X}_s - \bm{X}_c(x)
+  =
+  \begin{bmatrix}
+    0 \\ y \\ z
+  \end{bmatrix}.
+\end{equation}
+
+\section{梁中心线解析运动}
+
+\subsection{中心线弯曲角}
+
+脚本沿用了原始 \texttt{beam\_geometry/ProjectParameters.json} 中给定的解析运动。定义
+\par\noindent\emph{The script follows the analytical motion prescribed in the original \texttt{beam\_geometry/ProjectParameters.json}. Define}
+\begin{equation}
+  \theta(x) = 0.1 x \frac{\pi}{3}.
+\end{equation}
+
+令
+\par\noindent\emph{Let}
+\begin{equation}
+  R_c = \frac{3L}{\pi} = \frac{30}{\pi}.
+\end{equation}
+
+这里的 \(R_c\) 可以理解为弯曲中心线的圆弧半径。由于
+\par\noindent\emph{Here \(R_c\) can be interpreted as the radius of the circular arc of the bent centerline. Since}
+\begin{equation}
+  \frac{x}{R_c}
+  =
+  \frac{x}{30/\pi}
+  =
+  x\frac{\pi}{30}
+  =
+  0.1x\frac{\pi}{3}
+  =
+  \theta(x),
+\end{equation}
+所以 \(\theta(x)\) 正好是中心线圆弧参数角。
+\par\noindent\emph{Therefore, \(\theta(x)\) is exactly the angular parameter of the centerline circular arc.}
+
+\subsection{中心线位移}
+
+原始直梁中心线坐标为 \((x,0,0)\)。弯曲后的中心线坐标取为
+\par\noindent\emph{The original straight beam centerline coordinates are \((x,0,0)\). The coordinates of the bent centerline are taken as}
+\begin{equation}
+  \bm{x}_c(x) =
+  \begin{bmatrix}
+    R_c \sin \theta(x) \\
+    -R_c + R_c \cos \theta(x) \\
+    0
+  \end{bmatrix}.
+\end{equation}
+
+因此中心线位移为
+\par\noindent\emph{Therefore, the centerline displacement is}
+\begin{equation}
+  \bm{u}_c(x)
+  =
+  \bm{x}_c(x) - \bm{X}_c(x)
+  =
+  \begin{bmatrix}
+    R_c \sin \theta(x) - x \\
+    -R_c + R_c \cos \theta(x) \\
+    0
+  \end{bmatrix}.
+\end{equation}
+
+这对应脚本中的实现：
+\par\noindent\emph{This corresponds to the following implementation in the script:}
+\begin{lstlisting}[language=Python]
+radius = 3.0 * 10.0 / math.pi
+theta = 0.1 * x * (math.pi / 3.0)
+displacement = (
+    radius * math.sin(theta) - x,
+    -radius + radius * math.cos(theta),
+    0.0,
+)
+\end{lstlisting}
+
+\subsection{梁截面转角向量}
+
+在 Kratos 中，节点转角变量 \(\texttt{ROTATION}\) 以旋转向量形式给出：
+\par\noindent\emph{In Kratos, the nodal rotation variable \(\texttt{ROTATION}\) is given in rotation-vector form:}
+\begin{equation}
+  \bm{\varphi}(x)
+  =
+  \begin{bmatrix}
+    \theta(x) \\ 0 \\ -\theta(x)
+  \end{bmatrix}.
+\end{equation}
+
+这对应脚本中的实现：
+\par\noindent\emph{This corresponds to the following implementation in the script:}
+\begin{lstlisting}[language=Python]
+rotation = (theta, 0.0, -theta)
+\end{lstlisting}
+
+其中 \(x\) 分量表示绕全局 \(x\) 轴的扭转，\(z\) 分量表示与中心线弯曲相关的转动。
+\par\noindent\emph{The \(x\)-component represents torsion around the global \(x\)-axis, while the \(z\)-component represents the rotation associated with the bending of the centerline.}
+
+\section{由旋转向量构造有限转角旋转矩阵}
+
+\subsection{旋转向量的轴角形式}
+
+给定旋转向量
+\par\noindent\emph{Given a rotation vector}
+\begin{equation}
+  \bm{\varphi} =
+  \begin{bmatrix}
+    \varphi_x \\ \varphi_y \\ \varphi_z
+  \end{bmatrix},
+\end{equation}
+其模长为旋转角：
+\par\noindent\emph{its magnitude is the rotation angle:}
+\begin{equation}
+  \alpha = \|\bm{\varphi}\|.
+\end{equation}
+
+若 \(\alpha \neq 0\)，单位旋转轴为
+\par\noindent\emph{If \(\alpha \neq 0\), the unit rotation axis is}
+\begin{equation}
+  \bm{a} =
+  \frac{\bm{\varphi}}{\alpha}
+  =
+  \begin{bmatrix}
+    a_x \\ a_y \\ a_z
+  \end{bmatrix}.
+\end{equation}
+
+\subsection{叉乘矩阵}
+
+定义 \(\bm{a}\) 的反对称矩阵
+\par\noindent\emph{Define the skew-symmetric matrix of \(\bm{a}\) as}
+\begin{equation}
+  [\bm{a}]_\times =
+  \begin{bmatrix}
+    0 & -a_z & a_y \\
+    a_z & 0 & -a_x \\
+    -a_y & a_x & 0
+  \end{bmatrix}.
+\end{equation}
+
+对任意向量 \(\bm{v}\)，有
+\par\noindent\emph{For any vector \(\bm{v}\),}
+\begin{equation}
+  [\bm{a}]_\times \bm{v} = \bm{a} \times \bm{v}.
+\end{equation}
+
+\subsection{Rodrigues 公式}
+
+有限转角旋转矩阵由 Rodrigues 公式给出：
+\par\noindent\emph{The finite-rotation matrix is given by Rodrigues' formula:}
+\begin{equation}
+  \bm{R}(\bm{\varphi})
+  =
+  \cos\alpha\,\bm{I}
+  +
+  (1-\cos\alpha)\,\bm{a}\otimes\bm{a}
+  +
+  \sin\alpha\,[\bm{a}]_\times.
+\end{equation}
+
+当 \(\alpha\) 足够小时，取
+\par\noindent\emph{When \(\alpha\) is sufficiently small, we use}
+\begin{equation}
+  \bm{R}(\bm{\varphi}) = \bm{I}.
+\end{equation}
+
+这对应脚本中的实现：
+\par\noindent\emph{This corresponds to the following implementation in the script:}
+\begin{lstlisting}[language=Python]
+def rotation_matrix_from_rotation_vector(rotation):
+    angle = math.sqrt(sum(value * value for value in rotation))
+    if angle < 1e-14:
+        return (
+            (1.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0),
+            (0.0, 0.0, 1.0),
+        )
+
+    axis = tuple(value / angle for value in rotation)
+    axis_cross = (
+        (0.0, -axis[2], axis[1]),
+        (axis[2], 0.0, -axis[0]),
+        (-axis[1], axis[0], 0.0),
+    )
+    axis_outer = tuple(tuple(axis[i] * axis[j] for j in range(3)) for i in range(3))
+    identity = (
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (0.0, 0.0, 1.0),
+    )
+    cos_angle = math.cos(angle)
+    sin_angle = math.sin(angle)
+
+    return tuple(
+        tuple(
+            cos_angle * identity[i][j]
+            + (1.0 - cos_angle) * axis_outer[i][j]
+            + sin_angle * axis_cross[i][j]
+            for j in range(3)
+        )
+        for i in range(3)
+    )
+\end{lstlisting}
+
+\section{Surface 点理论位移}
+
+\subsection{有限转角截面运动}
+
+surface 点的初始位置可以写成
+\par\noindent\emph{The initial position of a surface point can be written as}
+\begin{equation}
+  \bm{X}_s = \bm{X}_c(x) + \bm{r}_0.
+\end{equation}
+
+假设该 surface 点随梁截面作刚体运动，则变形后位置为
+\par\noindent\emph{Assuming that the surface point follows the beam cross-section as a rigid body, its deformed position is}
+\begin{equation}
+  \bm{x}_s
+  =
+  \bm{x}_c(x)
+  +
+  \bm{R}\bigl(\bm{\varphi}(x)\bigr)\bm{r}_0.
+\end{equation}
+
+因此 surface 点理论位移为
+\par\noindent\emph{Therefore, the theoretical displacement of the surface point is}
+\begin{align}
+  \bm{u}_s^{\mathrm{ref}}
+  &=
+  \bm{x}_s - \bm{X}_s \\
+  &=
+  \left(\bm{x}_c(x)-\bm{X}_c(x)\right)
+  +
+  \left(\bm{R}\bigl(\bm{\varphi}(x)\bigr)\bm{r}_0-\bm{r}_0\right) \\
+  &=
+  \bm{u}_c(x)
+  +
+  \left(\bm{R}\bigl(\bm{\varphi}(x)\bigr)-\bm{I}\right)\bm{r}_0.
+\end{align}
+
+这就是脚本中 \texttt{expected\_surface} 的理论解。
+\par\noindent\emph{This is the theoretical solution used for \texttt{expected\_surface} in the script.}
+
+\subsection{与小转角公式的关系}
+
+若转角很小，则
+\par\noindent\emph{If the rotation is small, then}
+\begin{equation}
+  \bm{R}(\bm{\varphi})
+  \approx
+  \bm{I} + [\bm{\varphi}]_\times.
+\end{equation}
+
+此时
+\par\noindent\emph{In this case,}
+\begin{equation}
+  \bm{u}_s^{\mathrm{ref}}
+  \approx
+  \bm{u}_c(x)
+  +
+  \bm{\varphi}(x) \times \bm{r}_0.
+\end{equation}
+
+这就是 linear 版本 mapper 常见的小转角近似。但当前为了评估 \texttt{use\_corotation=true} 的 \texttt{beam\_mapper}，脚本采用的是有限转角表达式
+\par\noindent\emph{This is the small-rotation approximation commonly used by the linear version of the mapper.
+However, in order to evaluate \texttt{beam\_mapper} with \texttt{use\_corotation=true}, the current script uses the finite-rotation expression}
+\begin{equation}
+  \bm{u}_c(x)
+  +
+  \left(\bm{R}(\bm{\varphi}(x))-\bm{I}\right)\bm{r}_0,
+\end{equation}
+而不是小转角表达式。
+\par\noindent\emph{rather than the small-rotation expression.}
+
+\section{编程实现}
+
+对每个 surface node，脚本执行以下步骤：
+\par\noindent\emph{For each surface node, the script performs the following steps:}
+\begin{enumerate}
+  \item 读取节点初始坐标 \((x,y,z)\)；
+  \par\noindent\emph{Read the initial nodal coordinates \((x,y,z)\).}
+  \item 用 \(x\) 计算中心线位移 \(\bm{u}_c(x)\) 和旋转向量 \(\bm{\varphi}(x)\)；
+  \par\noindent\emph{Use \(x\) to compute the centerline displacement \(\bm{u}_c(x)\) and the rotation vector \(\bm{\varphi}(x)\).}
+  \item 构造 offset 向量
+  \[
+    \bm{r}_0 = (0,y,z)^T;
+  \]
+  \par\noindent\emph{Construct the offset vector \(\bm{r}_0 = (0,y,z)^T\).}
+  \item 由 Rodrigues 公式构造旋转矩阵 \(\bm{R}(\bm{\varphi})\)；
+  \par\noindent\emph{Construct the rotation matrix \(\bm{R}(\bm{\varphi})\) using Rodrigues' formula.}
+  \item 计算旋转后的 offset：
+  \[
+    \bm{r} = \bm{R}(\bm{\varphi})\bm{r}_0;
+  \]
+  \par\noindent\emph{Compute the rotated offset \(\bm{r} = \bm{R}(\bm{\varphi})\bm{r}_0\).}
+  \item 得到 surface 理论位移：
+  \[
+    \bm{u}_s^{\mathrm{ref}} = \bm{u}_c(x) + \bm{r} - \bm{r}_0;
+  \]
+  \par\noindent\emph{Obtain the theoretical surface displacement
+  \(\bm{u}_s^{\mathrm{ref}} = \bm{u}_c(x) + \bm{r} - \bm{r}_0\).}
+  \item 将该值写入 \texttt{expected\_surface} 的 \texttt{DISPLACEMENT}。
+  \par\noindent\emph{Write this value into the \texttt{DISPLACEMENT} field of \texttt{expected\_surface}.}
+\end{enumerate}
+
+对应代码为：
+\par\noindent\emph{The corresponding code is:}
+\begin{lstlisting}[language=Python]
+def fill_expected_surface_displacement(surface):
+    for node in surface.Nodes:
+        center_displacement, rotation = prescribed_beam_kinematics(node.X0)
+        offset = (0.0, node.Y0, node.Z0)
+        rotation_matrix = rotation_matrix_from_rotation_vector(rotation)
+        rotated_offset = mat_vec_prod(rotation_matrix, offset)
+        rotational_displacement = tuple(rotated_offset[i] - offset[i] for i in range(3))
+        node.SetSolutionStepValue(
+            KM.DISPLACEMENT,
+            [center_displacement[i] + rotational_displacement[i] for i in range(3)],
+        )
+\end{lstlisting}
+
+\section{误差度量}
+
+对任意 mapper 得到的 surface 位移 \(\bm{u}_s^{\mathrm{map}}\)，误差定义为欧氏范数：
+\par\noindent\emph{For the surface displacement \(\bm{u}_s^{\mathrm{map}}\) obtained by any mapper, the error is defined as the Euclidean norm:}
+\begin{equation}
+  e =
+  \left\|
+    \bm{u}_s^{\mathrm{map}}
+    -
+    \bm{u}_s^{\mathrm{ref}}
+  \right\|_2.
+\end{equation}
+
+在代码中：
+\par\noindent\emph{In the code:}
+\begin{lstlisting}[language=Python]
+def norm_3d(lhs, rhs):
+    return math.sqrt(sum((lhs[i] - rhs[i]) ** 2 for i in range(3)))
+\end{lstlisting}
+
+三个 mapper 的最大误差分别为
+\par\noindent\emph{The maximum errors of the three mappers are respectively}
+\begin{align}
+  e_{\max}^{\mathrm{spline}}
+  &=
+  \max_i
+  \left\|
+    \bm{u}_{s,i}^{\mathrm{beam\_spline}}
+    -
+    \bm{u}_{s,i}^{\mathrm{ref}}
+  \right\|_2, \\
+  e_{\max}^{\mathrm{linear}}
+  &=
+  \max_i
+  \left\|
+    \bm{u}_{s,i}^{\mathrm{beam\_mapper,linear}}
+    -
+    \bm{u}_{s,i}^{\mathrm{ref}}
+  \right\|_2, \\
+  e_{\max}^{\mathrm{corotation}}
+  &=
+  \max_i
+  \left\|
+    \bm{u}_{s,i}^{\mathrm{beam\_mapper,corotation}}
+    -
+    \bm{u}_{s,i}^{\mathrm{ref}}
+  \right\|_2.
+\end{align}
+
+\section{为什么 co-rotation 版本应更接近理论解}
+
+当前理论解使用的是有限转角截面刚体运动：
+\par\noindent\emph{The current theoretical solution uses finite-rotation rigid-body motion of the cross-section:}
+\begin{equation}
+  \bm{u}_s^{\mathrm{ref}}
+  =
+  \bm{u}_c(x)
+  +
+  \left(\bm{R}(\bm{\varphi})-\bm{I}\right)\bm{r}_0.
+\end{equation}
+
+\texttt{beam\_mapper} 的 \texttt{use\_corotation=true} 分支同样试图在 co-rotational 框架中处理截面有限转动，因此它应当比 \texttt{use\_corotation=false} 的小转角线性版本更接近该理论解。
+\par\noindent\emph{The \texttt{use\_corotation=true} branch of \texttt{beam\_mapper} also attempts to handle finite cross-section rotations in a co-rotational frame.
+Therefore, it should be closer to this theoretical solution than the small-rotation linear version with \texttt{use\_corotation=false}.}
+
+如果使用小转角参考
+\par\noindent\emph{If the small-rotation reference is used}
+\begin{equation}
+  \bm{u}_s^{\mathrm{small}}
+  =
+  \bm{u}_c(x)
+  +
+  \bm{\varphi}\times\bm{r}_0,
+\end{equation}
+则 linear mapper 的误差会相对更小；但这并不能检验 co-rotation 对有限转角的优势。因此当前脚本选择有限转角理论解作为主要参考。
+\par\noindent\emph{then the error of the linear mapper would become relatively smaller.
+However, that would not test the advantage of co-rotation for finite rotations.
+For this reason, the current script uses the finite-rotation theoretical solution as the main reference.}
+
+\section{当前脚本输出}
+
+脚本会输出如下 VTK 文件：
+\par\noindent\emph{The script writes the following VTK files:}
+\begin{itemize}
+  \item \texttt{origin\_beam\_structure\_Parts\_Beam\_beam\_0\_0.vtk};
+  \item \texttt{expected\_surface\_Parts\_Shell\_wet\_surface\_0\_0.vtk};
+  \item \texttt{beam\_spline\_mapped\_surface\_Parts\_Shell\_wet\_surface\_0\_0.vtk};
+  \item \texttt{beam\_mapper\_linear\_mapped\_surface\_Parts\_Shell\_wet\_surface\_0\_0.vtk};
+  \item \texttt{beam\_mapper\_corotation\_mapped\_surface\_Parts\_Shell\_wet\_surface\_0\_0.vtk}.
+\end{itemize}
+
+输出目录为
+\begin{center}
+\texttt{Bending\_Torsion\_Beam\_Test\_Case/TestCase\_Output/structure\_to\_surface\_10x100}.
+\end{center}
+\noindent\emph{The output directory is
+\texttt{Bending\_Torsion\_Beam\_Test\_Case/TestCase\_Output/structure\_to\_surface\_10x100}.}
+
+\end{document}

@@ -1,0 +1,59 @@
+Begin ModelPartData
+//  VARIABLE_NAME value
+End ModelPartData
+
+Begin Properties 0
+End Properties
+Begin Nodes
+    1   0.0000000000  -0.5000000000   0.5000000000
+    2   0.0000000000   0.5000000000   0.5000000000
+    3   0.0000000000  -0.5000000000  -0.5000000000
+    4   0.0000000000   0.5000000000  -0.5000000000
+    5   5.0000000000  -0.5000000000   0.5000000000
+    6   5.0000000000   0.5000000000   0.5000000000
+    7   5.0000000000  -0.5000000000  -0.5000000000
+    8   5.0000000000   0.5000000000  -0.5000000000
+    9  10.0000000000  -0.5000000000   0.5000000000
+   10  10.0000000000   0.5000000000   0.5000000000
+   11  10.0000000000  -0.5000000000  -0.5000000000
+   12  10.0000000000   0.5000000000  -0.5000000000
+End Nodes
+
+
+Begin Elements ShellThinElementCorotational3D4N// GUI group identifier: wet_surface
+        1          0     5     6     2     1 
+        2          0     9    10     6     5 
+        3          0     6     8     4     2 
+        4          0    10    12     8     6 
+        5          0     8     7    11    12 
+        6          0     4     3     7     8 
+        7          0     5     7     3     1 
+        8          0     9    11     7     5 
+End Elements
+
+Begin SubModelPart Parts_Shell_wet_surface // Group wet_surface // Subtree Parts_Shell
+    Begin SubModelPartNodes
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+           10
+           11
+           12
+    End SubModelPartNodes
+    Begin SubModelPartElements
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+    End SubModelPartElements
+End SubModelPart

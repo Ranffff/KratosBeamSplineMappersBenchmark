@@ -1,0 +1,31 @@
+STRUCTURE TO SURFACE BEAM MAPPER COMPARISON
+kinematics_mode: rotation
+tip_rotation: 0.6283185307179586
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_10x100.mdpa
+vtk_output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Rotation_10x100/theta=0.2pi
+
+ModelPartIO:   [Reading Nodes    : 1001 nodes read]
+ModelPartIO:   [Reading Elements : 1000 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Total Lines Read : 5025]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+mesh: beam=1001 nodes/1000 elems, surface=4040 nodes/4000 elems
+reference_mapper: beam_mapper(use_corotation=true)
+max_norms:
+  corotation_displacement: 3.2503979312136684 node: 4021
+  spline_vs_linear: 4.97010839587133e-15 node: 3742
+  spline_error_to_corotation: 2.2175343842292903e-11 node: 4021 percent: 6.822347389943371e-10
+  linear_error_to_corotation: 2.217620179423298e-11 node: 4021 percent: 6.822611342837211e-10
+samples: node_id x y z | spline | linear | corotation
+165 0.0 -0.5 -0.5 | (-1.4432899320127035e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+1 0.0 -0.5 0.5 | (-1.4432899320127035e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+432 0.0 0.5 -0.5 | (1.4432899320127035e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)
+164 0.0 0.5 0.5 | (1.4432899320127035e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 0.0, 0.0)

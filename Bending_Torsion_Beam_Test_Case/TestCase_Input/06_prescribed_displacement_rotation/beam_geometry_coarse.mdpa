@@ -1,0 +1,115 @@
+Begin ModelPartData
+//  VARIABLE_NAME value
+End ModelPartData
+
+Begin Properties 0
+End Properties
+Begin Nodes
+    1  10.00000000   0.0000000000   0.0000000000
+    2   9.4444444444   0.0000000000   0.0000000000
+    3   8.8888888889   0.0000000000   0.0000000000
+    4   8.3333333333   0.0000000000   0.0000000000
+    5   7.7777777778   0.0000000000   0.0000000000
+    6   7.2222222222   0.0000000000   0.0000000000
+    7   6.6666666667   0.0000000000   0.0000000000
+    8   6.1111111111   0.0000000000   0.0000000000
+    9   5.5555555556   0.0000000000   0.0000000000
+   10   5.0000000000   0.0000000000   0.0000000000
+   11   4.4444444444   0.0000000000   0.0000000000
+   12   3.8888888889   0.0000000000   0.0000000000
+   13   3.3333333333   0.0000000000   0.0000000000
+   14   2.7777777778   0.0000000000   0.0000000000
+   15   2.2222222222   0.0000000000   0.0000000000
+   16   1.6666666667   0.0000000000   0.0000000000
+   17   1.1111111111   0.0000000000   0.0000000000
+   18   0.5555555556   0.0000000000   0.0000000000
+   19   0.0000000000   0.0000000000   0.0000000000
+End Nodes
+
+
+Begin Elements CrBeamElement3D2N// GUI group identifier: beam
+        1          0    19    18 
+        2          0    18    17 
+        3          0    17    16 
+        4          0    16    15 
+        5          0    15    14 
+        6          0    14    13 
+        7          0    13    12 
+        8          0    12    11 
+        9          0    11    10 
+       10          0    10     9 
+       11          0     9     8 
+       12          0     8     7 
+       13          0     7     6 
+       14          0     6     5 
+       15          0     5     4 
+       16          0     4     3 
+       17          0     3     2 
+       18          0     2     1 
+End Elements
+
+Begin Conditions PointLoadCondition3D1N// GUI group identifier: Point_Load
+    2 0 1
+End Conditions
+
+Begin SubModelPart Parts_Beam_beam // Group beam // Subtree Parts_Beam
+    Begin SubModelPartNodes
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+           10
+           11
+           12
+           13
+           14
+           15
+           16
+           17
+           18
+           19
+    End SubModelPartNodes
+    Begin SubModelPartElements
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+           10
+           11
+           12
+           13
+           14
+           15
+           16
+           17
+           18
+    End SubModelPartElements
+End SubModelPart
+Begin SubModelPart DISPLACEMENT_Dirichlet_BC // Group Dirichlet_BC // Subtree DISPLACEMENT
+    Begin SubModelPartNodes
+           19
+    End SubModelPartNodes
+End SubModelPart
+Begin SubModelPart ROTATION_Dirichlet_BC // Group Dirichlet_BC // Subtree ROTATION
+    Begin SubModelPartNodes
+           19
+    End SubModelPartNodes
+End SubModelPart
+Begin SubModelPart PointLoad2D_Point_Load // Group Point_Load // Subtree PointLoad2D
+    Begin SubModelPartNodes
+            1
+    End SubModelPartNodes
+    Begin SubModelPartConditions
+            2
+    End SubModelPartConditions
+End SubModelPart

@@ -1,0 +1,420 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=22mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\title{Beam-Spline Mappers in the Mok FSI Case\\
+Theory, Current Implementation, Verification, and Stability Evidence}
+\author{}
+\date{24 July 2026}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\curl}{\nabla\times}
+
+\begin{document}
+\maketitle
+
+\section{Scope and canonical setup}
+
+This note is the single maintained technical record for
+\texttt{FSI\_mok\_Test\_Case}.  It explains the current implementation of
+\texttt{BeamSplineMapper} and
+\texttt{BeamSplineMapper\_WithRotationalRecovery}, the analytical benchmark
+design, the conservative inverse maps, and the retained nonlinear FSI
+evidence.  Historical parameter sweeps and pre-fix output are not part of the
+current evidence set.
+
+The physical model follows the official Kratos Mok validation case.  The
+two-dimensional wall occupies
+\[
+  x\in[0.4965,0.5015]\ {\rm m},\qquad y\in[0,0.25]\ {\rm m},
+\]
+and its beam abstraction is placed on the centroidal line \(x=0.499\) m.  The
+formal linear-thickness scale is \(s=50\).  It is not a numerical tuning
+parameter: structure and fluid load are scaled together.  The beam properties
+are
+\[
+\begin{aligned}
+ A &=0.25, &
+ I_{22}&=2.0833333333333336\times10^{-2},\\
+ I_{33}&=5.208333333333334\times10^{-7},&
+ J&=2.0833333333333334\times10^{-6}.
+\end{aligned}
+\]
+Fluid \texttt{REACTION} is multiplied by \(+50\) before transfer, and
+\texttt{swap\_sign} remains active.  The retained FSI gate uses
+\[
+ \Delta t=0.05,\qquad \alpha=0.03,\qquad
+ N_{\rm coupling}=60.
+\]
+
+\section{Plain BeamSplineMapper}
+
+\subsection{Forward map}
+
+The plain mapper is a one-dimensional beam-spline construction.  A surface
+node is projected onto the reference beam chain.  Axial translation and
+torsion are interpolated on the local beam coordinate; transverse centerline
+translations use spline systems whose derivative data are supplied by the
+beam rotations.  A fixed affine augmentation \(\{1,\xi\}\) is used, with
+\[
+  \xi=\frac{x-X_c}{a}\in[-1,1],
+\]
+where \(X_c\) is the reference-chain midpoint and \(a=L/2\).  Derivative rows
+are scaled by \(1/a\).  This normalization removes dependence on coordinate
+translation and avoids the dimensional imbalance of an unscaled beam
+coordinate.
+
+The destination displacement has the generic form
+\[
+  u_d=F_{\rm plain}(q_b).
+\]
+Its section-offset contribution uses the recovered/interpolated section
+rotation.  Because a finite rotation matrix is used in that contribution,
+\(F_{\rm plain}\) is nonlinear in the rotation degrees of freedom even though
+the spline solves themselves are linear.
+
+\subsection{Conservative inverse}
+
+The load map is defined by discrete virtual work:
+\[
+  \delta u_d=J_{\rm plain}(q_b)\,\delta q_b,\qquad
+  Q_b=J_{\rm plain}(q_b)^\T f_d.
+\]
+The bending contribution therefore cannot be distributed only to the two
+nodes of the projected segment.  Its evaluation functional is first
+accumulated over all destination forces and is then propagated to the whole
+beam support through the transpose spline solve.  The normalized derivative
+scaling used in the forward map is also used in this adjoint.
+
+\paragraph{Resolved correctness issue.}
+The earlier inverse path used only a two-node force/lever-arm distribution and
+was not the transpose of the global spline interpolation.  It also omitted
+part of the section offset induced by bending rotations.  The repaired map
+uses the exact forward tangent and its transpose.  The current four
+directional virtual-work errors are
+\[
+  9.88\times10^{-10},\quad 4.52\times10^{-10},\quad
+  1.41\times10^{-10},\quad 2.40\times10^{-9}.
+\]
+All pass the \(10^{-7}\) tangent/adjoint acceptance criterion.
+
+\section{BeamSplineMapper with rotational recovery}
+
+\subsection{Paper-faithful small-rotation field}
+
+Ahrem, Beckert, and Wendland reconstruct one vector displacement field
+\(s:\RR^3\rightarrow\RR^3\).  At structural sites \(X_i\), the generalized
+interpolation conditions are
+\[
+  s(X_i)=g_i,\qquad \curl s(X_i)=2h_i.
+\]
+The second equation follows from infinitesimal kinematics,
+\[
+  h=\frac12\curl u,
+\]
+and the paper explicitly restricts the interpretation to small angles.  With
+three value and three curl functionals per point, the saddle system is
+\[
+\begin{bmatrix}
+ A_{\Phi,X}&P_X\\
+ P_X^\T&0
+\end{bmatrix}
+\begin{bmatrix}a\\b\end{bmatrix}
+=
+\begin{bmatrix}g\\2h\\0\end{bmatrix}.
+\]
+In \texttt{rotation\_recovery\_mode = small}, the surface displacement is
+evaluated directly:
+\[
+  u_s=s(X_s).
+\]
+For fixed support this map is linear, \(u_s=Hq_b\), so the conservative load
+map is \(Q_b=H^\T f_s\).
+
+\subsection{Polynomial levels}
+
+The public integer setting \texttt{polynomial\_level} has the following
+meaning:
+\[
+\begin{array}{ccl}
+0&:&\text{automatic rank/conditioning fallback},\\
+1&:&\text{paper full-3D affine space, 12 vector modes},\\
+2&:&\text{line-basic space, 9 modes},\\
+3&:&\text{line-enriched space, 12 modes},\\
+4&:&\text{centered/scaled Legendre high-order space, 30 modes}.
+\end{array}
+\]
+Level 4 replaces dimensional monomials by Legendre polynomials in
+\(\xi\in[-1,1]\) without reducing the polynomial span.  Level 1 can be
+non-unisolvent on a perfectly collinear value/curl support and is rejected
+when its functional matrix is rank deficient.  Level 0 selects the highest
+full-rank level below the conditioning limit; it selected level 4 with a
+polynomial condition estimate of approximately \(1.86\times10^2\) in the
+analytical beam test.
+
+Legacy string-valued \texttt{polynomial\_basis} values are translated with a
+deprecation warning.  Supplying both interfaces is an error.
+
+\subsection{Kernel, coordinates, and regularization}
+
+For the Kratos Gaussian convention
+\[
+  \phi(r)=\exp\!\left[-\frac12(r/h)^2\right],
+\]
+the paper radius \(d\) in \(\exp(-r^2/d^2)\) satisfies \(d=\sqrt{2}h\).
+All recovery coordinates and their value/curl evaluation functionals use the
+same centered reference scale.  The analytic Gaussian Hessian at \(r=0\),
+\[
+  \nabla\nabla\phi(0)=-\frac1{h^2}I,
+\]
+is retained in the curl--curl self block.  The previous generic zero-distance
+branch incorrectly replaced this nonzero limit by zero.
+
+Regularization is added only to the kernel/interpolation block.  The
+polynomial constraint block remains exactly zero, as required by the saddle
+formulation.  A rank defect in \(P\) is never hidden by regularizing this zero
+block.  The production recovery setting is
+\[
+  h=0.50,\qquad \epsilon=10^{-8},\qquad
+  \texttt{polynomial\_level}=4.
+\]
+
+\subsection{Finite rigid-section hybrid}
+
+The selectable \texttt{rotation\_recovery\_mode = finite} is deliberately
+labelled an Ahrem--rigid-section hybrid, not a finite-rotation theorem from
+the Ahrem paper.  Let \(X_c\) be the reference projection on the beam and
+\(r_0=X_s-X_c\).  The Ahrem solve provides
+\[
+  u_c=s(X_c),\qquad
+  \theta_c=\frac12\curl s(X_c).
+\]
+The surface displacement is then
+\[
+  u_s=u_c+
+  \left[\exp([\theta_c]_\times)-I\right]r_0.
+\]
+The reference offset is never formed from current node coordinates.
+Rodrigues' formula and small-angle series are used for the exponential map.
+No rotation-vector recovery from \(R\) is performed, avoiding an additional
+\(\pi\)-branch operation.
+
+This model enforces a rigid section and exactly reproduces finite rigid
+section rotations.  It is not the same physical model as direct evaluation of
+the three-dimensional Ahrem displacement field: the latter can represent a
+general field and does not impose a rigid cross-section.
+
+The finite map is nonlinear.  Its conservative inverse is the
+current-state tangent transpose,
+\[
+  Q_b=J(q_b)^\T f_s,\qquad
+  J=\frac{\partial u_s}{\partial q_b}.
+\]
+For \(\theta=\phi n\), the offset tangent uses the analytical SO(3) right
+Jacobian
+\[
+ J_r(\theta)=I-\frac{1-\cos\phi}{\phi^2}[\theta]_\times
+ +\frac{\phi-\sin\phi}{\phi^3}[\theta]_\times^2.
+\]
+The resulting nodal moment is work-conjugate to the selected rotation-vector
+parameter.  At finite rotation it is not generally identical to a naive
+unmodified lever-arm moment.  The state used by the inverse is cached during
+the corresponding forward map; inverse-before-forward has an explicit
+\texttt{DISPLACEMENT}/\texttt{ROTATION} fallback and warning.
+
+\section{Common geometric and algebraic corrections}
+
+The following defects were resolved in both mapper implementations.
+
+\begin{enumerate}
+\item Mapper search no longer writes reference coordinates into the beam
+      nodes' current coordinates.  Projection may use reference geometry,
+      but it has no observable side effect on the structural state.
+\item When an approximate projection coordinate is clamped, its shape
+      functions, projection point, distance, and section offset are rebuilt
+      from that same clamped coordinate.
+\item The local frame is constructed from the Cartesian axis least aligned
+      with the beam tangent, followed by orthogonal projection and a
+      right-handed cross product.  Negative axes, near-axis directions, and
+      nearly collinear segments no longer enter discontinuous equality
+      branches.
+\item Reference-chain midpoint and half-length scaling are used consistently
+      in values, derivatives, curls, moment functionals, and inverse
+      functionals.
+\item Explicit inverse matrices are not stored.  Forward systems are solved,
+      and inverse functionals are aggregated per beam chain before solving
+      \(A^\T z=b\).
+\item \texttt{swap\_sign} is applied only at the physical load accumulation;
+      it is not mixed into the mathematical transpose.
+\end{enumerate}
+
+\section{Analytical benchmark design}
+
+Mapper accuracy is measured only against prescribed analytical fields, never
+against another mapper.  For surface-node values,
+\[
+ e_{\rm relL2}=
+ \sqrt{\frac{\sum_i\|u_i^{\rm map}-u_i^{\rm exact}\|^2}
+              {\sum_i\|u_i^{\rm exact}\|^2}}.
+\]
+Exact-span tests with zero regularization use a practical solver-level target
+of \(10^{-10}\), relaxed to \(10^{-9}\) when the assembled saddle solve and
+coordinate transforms make \(10^{-10}\) marginal.  Fields that centerline
+values and curl cannot uniquely identify are reported as
+\emph{non-identifiable diagnostics}, not exact-reproduction failures.
+
+\subsection{Forward verification}
+
+The core suite contains rigid translation and infinitesimal rotation, axial
+motion, bending, torsion, curl-compatible fields, polynomial-level
+reproduction, nonuniform spacing, translated/scaled coordinates, negative
+axes, and near-collinear geometry.  Finite-mode checks prescribe exact rigid
+rotations of \(1^\circ,30^\circ,90^\circ,170^\circ\).  Every test also checks
+that mapper construction leaves current coordinates unchanged.
+
+The current rigid-rotation results are:
+\[
+\begin{array}{lrrrr}
+\toprule
+&1^\circ&30^\circ&90^\circ&170^\circ\\
+\midrule
+\text{BeamSplineMapper}
+&5.81{\times}10^{-6}&5.22{\times}10^{-3}
+&4.51{\times}10^{-2}&8.83{\times}10^{-2}\\
+\text{Recovery small}
+&9.18{\times}10^{-4}&2.89{\times}10^{-2}
+&1.13{\times}10^{-1}&3.13{\times}10^{-1}\\
+\text{Recovery finite}
+&3.98{\times}10^{-15}&4.47{\times}10^{-16}
+&5.71{\times}10^{-16}&1.18{\times}10^{-15}\\
+\bottomrule
+\end{array}
+\]
+These results quantify kinematic compatibility; they do not establish FSI
+stability.
+
+\subsection{Backward/adjoint verification}
+
+For a prescribed state \(q\), perturbation \(p\), and surface force \(f\), the
+centered finite-difference directional derivative is compared with the
+inverse-map work:
+\[
+ \frac{f^\T[F(q+\varepsilon p)-F(q-\varepsilon p)]}{2\varepsilon}
+ \quad\hbox{versus}\quad
+ p^\T J(q)^\T f.
+\]
+The production Jacobian is analytical; finite differences are used only for
+verification.  Bending about both transverse axes, torsion, and a mixed field
+are included.  All current plain, recovery-small, and recovery-finite cases
+pass.  Their worst relative discrepancies are respectively
+\[
+  2.40\times10^{-9},\qquad
+  2.24\times10^{-9},\qquad
+  2.57\times10^{-9}.
+\]
+
+\section{FSI benchmark design}
+
+The FSI runner supports NearestNeighbor, BeamMapper\_CoRotation,
+BeamSplineMapper, and both recovery modes, together with scale, time step,
+relaxation, coupling-iteration limit, kernel radius, regularization,
+polynomial level, structural strategy, and target end time.  Each trial:
+\begin{enumerate}
+\item snapshots every modified JSON, MDPA, and material file;
+\item synchronizes section and fluid-load scaling;
+\item writes point history, CFD/CSM VTK, full log, settings, conclusion, and
+      summary JSON into a unique directory;
+\item monitors nonfinite output, coupling failure, and repeated structural
+      nonconvergence;
+\item stops invalid runs and verifies restoration by file hashes.
+\end{enumerate}
+
+The stability gate is \(0.5\rightarrow4.5\rightarrow10\rightarrow25\) s.
+Failure of one gate prevents an unsupported longer run.  FSI trials do not use
+NearestNeighbor as an accuracy reference; the analytical suite supplies
+accuracy, while FSI supplies nonlinear stability and failure-mechanism
+evidence.
+
+\section{Retained post-fix FSI results}
+
+All retained trials use \(s=50\), \(\Delta t=0.05\), \(\alpha=0.03\), 60
+coupling iterations, synchronized scaling, and \texttt{swap\_sign}.
+
+\begin{center}
+\begin{tabular}{p{48mm}p{18mm}p{22mm}p{42mm}}
+\toprule
+Mapper/mode & Target & Last valid & Failure\\
+\midrule
+BeamSplineMapper, normalized
+&4.5 s&3.05 s&structural nonconvergence, step 62 at 3.10 s\\
+Recovery, level 4, small
+&4.5 s&4.20 s&structural nonconvergence, step 85 at 4.25 s\\
+Recovery, level 4, finite
+&4.5 s&3.05 s&structural nonconvergence, step 62 at 3.10 s\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All three trial summaries report successful restoration.  No mapper reaches
+the 4.5 s gate, so no post-fix run was promoted to 10 or 25 s.  The finite
+recovery and normalized plain histories are almost identical at their limit:
+their point-A \(u_x\) values at \(t=3.05\) s are \(0.01611986\) and
+\(0.01612157\) m.  Recovery-small reproduces the earlier step-85 limit after
+coordinate normalization and the Legendre polynomial correction.  Therefore
+the old high-order monomial conditioning was not the root cause of that
+event.
+
+The analytical checks exclude coordinate mutation, a discontinuous projection
+definition, missing Gaussian self-Hessian, a non-adjoint load map, and an
+incorrect finite SO(3) tangent as current explanations.  FSI fields remain
+finite up to the last accepted step, after which the structural nonlinear
+solve repeatedly fails.  The evidence presently classifies the terminal event
+primarily as a structural/coupled-trajectory nonconvergence, not as a mapper
+singularity or mapper-produced NaN.  A structure-only replay of steps 62 and
+85 is the next mechanism-isolating experiment.
+
+\section{Reproducibility and retained records}
+
+The canonical scripts are under \texttt{Scripts/}:
+\begin{itemize}
+\item \texttt{run\_fsi\_benchmark.py}: parameterized, restoring FSI runner;
+\item \texttt{validate\_beam\_spline\_forward.py} and
+      \texttt{validate\_beam\_spline\_adjoint.py};
+\item \texttt{validate\_recovery\_forward.py} and
+      \texttt{validate\_recovery\_adjoint.py};
+\item the conditioning, Newton-history, VTK-history, and load-consistency
+      analyzers.
+\end{itemize}
+
+Current analytical results are in
+\texttt{TestCase\_Output/MapperVerification}.  Current nonlinear FSI evidence
+is restricted to the three \(t=4.5\) gate directories under
+\texttt{TestCase\_Output/StabilityTrials\_s50}.  Every numerical conclusion
+above can be reconstructed from their summaries and logs.
+
+\section{Remaining theoretical decisions}
+
+\begin{enumerate}
+\item Confirm whether the desired recovery mapper is the paper-faithful,
+      general three-dimensional Ahrem displacement field or a rigid-section
+      finite-rotation beam surface model.  They are different nonlinear FSI
+      models.
+\item Confirm the precise semantics of the structural element's
+      \texttt{ROTATION}: total exponential-coordinate vector, incremental
+      rotation, or another composed parameter.  The finite hybrid requires a
+      compatible total-state interpretation.
+\item Confirm whether rigid cross-sections are a desired physical constraint.
+      If section warping is relevant, the finite hybrid is too restrictive.
+\item If a fully geometrically exact recovery is required, consider separate
+      interpolation of translation and orientation on \(SO(3)\), with a
+      consistent tangent transpose, rather than assigning finite physical
+      meaning to \(\tfrac12\curl s\).
+\end{enumerate}
+
+\end{document}

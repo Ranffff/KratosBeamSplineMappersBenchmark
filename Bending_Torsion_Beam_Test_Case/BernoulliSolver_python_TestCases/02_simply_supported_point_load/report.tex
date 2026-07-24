@@ -1,0 +1,34 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{amsmath}
+\begin{document}
+\section*{Simply supported beam with a centered point load}
+The beam is simply supported at both ends and subjected to $P=-1000$ N at midspan. The material and section data are $E=2.0690e+11$ Pa, $\nu=0.29$, $G=8.0194e+10$ Pa, $I_z=1$ m$^4$, $J=1$ m$^4$, and $L=10$ m.
+
+\subsection*{Configuration}
+\begin{center}
+\begin{tikzpicture}[scale=1.0]
+\draw[thick] (0,0)--(5,0);\draw (0,-0.1)--(-0.25,-0.55)--(0.25,-0.55)--cycle;\draw (5,-0.1)--(4.75,-0.55)--(5.25,-0.55)--cycle;\draw[->,thick] (2.5,0.9)--(2.5,0.15) node[midway,right] {$P$};
+\end{tikzpicture}
+\end{center}
+
+\subsection*{Analytical Reference}
+$v(L/2)=PL^3/(48EI_z)$ and $\theta_z(0)=PL^2/(16EI_z)$.
+
+\subsection*{Numerical Comparison}
+\begin{center}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.18\linewidth}|r|r|r|r|r|}
+\hline
+Quantity & Analytical & C++ & Python & Python vs. analytical & Python vs. C++ \\
+\hline
+$v_y(L/2)$ & -1.00692766e-07 & -1.00692770e-07 & -1.00692770e-07 & 3.742e-06\% & 0.000e+00\% \\
+$\theta_z(0)$ & -3.02078299e-08 & -3.02078290e-08 & -3.02078290e-08 & 2.878e-06\% & 0.000e+00\% \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Evaluation}
+The Python and C++ results are numerically identical to the precision written in the VTK files for the selected critical quantities. The remaining discrepancy with the analytical expression is governed by the finite element discretization and by the equivalent nodal loading representation where applicable.
+\end{document}

@@ -1,0 +1,103 @@
+{
+    "problem_data" :
+    {
+        "start_time" : 0.0,
+        "end_time" : 1.0,
+        "echo_level" : 0,
+        "print_colors" : true,
+        "parallel_type" : "OpenMP"
+    },
+    "solver_settings" :
+    {
+        "type" : "coupled_solvers.gauss_seidel_weak",
+        "echo_level" : 3,
+        // "num_coupling_iterations" : 12,
+        // "convergence_accelerators" : [
+        //     {
+        //         "type"      : "mvqn",
+        //         "solver"    : "fluid",
+        //         "data_name" : "disp"
+        //     }
+        // ],
+        // "convergence_criteria" : [
+        //     {
+        //         "type"          : "relative_norm_previous_residual",
+        //         "solver"        : "fluid",
+        //         "data_name"     : "disp",
+        //         "abs_tolerance" : 1e-6,
+        //         "rel_tolerance" : 1e-6
+        //     }
+        // ],
+        "data_transfer_operators" : {
+            "mapper" : {
+                "type" : "kratos_beam_mapping",
+                "model_part_name_beam"         : "Structure.Parts_Beam_beam",
+                "model_part_name_surface"      : "Structure.Parts_Shell_wet_surface",
+                "solver_name_beam": "beam_structure",
+                "solver_name_surface" : "dummy_fluid",
+                "echo_level": 3,
+                "mapper_settings" : {
+                    "mapper_type" : "beam_mapper",
+                    "use_corotation" : true,
+                    "search_settings": {
+                        "max_num_search_iterations"     : 30,
+                        "search_radius": 3.0
+                    },
+                    "echo_level": 3
+                }
+            }
+        },
+        "coupling_sequence":
+        [
+            {
+                "name": "beam_structure",
+                "input_data_list"  : [],
+                "output_data_list" : []
+            },
+            {
+                "name": "dummy_fluid",
+                "input_data_list": [
+                    {
+                        "data"             : "disp",
+                        "from_solver"      : "beam_structure",
+                        "from_solver_data" : "disp",
+                        "data_transfer_operator" : "mapper"
+                    }
+                ],
+                "output_data_list": [
+                ]
+            }
+        ],
+        "solvers" :
+        {
+            "beam_structure":
+            {
+                "type" : "solver_wrappers.kratos.structural_mechanics_wrapper",
+                "solver_wrapper_settings" : {
+                    "input_file"  : "beam_geometry/ProjectParameters"
+                },
+                "data" : {
+                    "disp" : {
+                        "model_part_name"   : "Structure.Parts_Beam_beam",
+                        "dimension" : 2,
+                        "variable_name" : "DISPLACEMENT"
+                    }
+                }
+            },
+            "dummy_fluid" :
+            {
+                "type" : "solver_wrappers.kratos.structural_mechanics_wrapper",
+                "solver_wrapper_settings" : {
+                    "input_file"  : "fluid_surface_mesh/ProjectParameters"
+                },
+                "data" : {
+                    "disp" : {
+                        "model_part_name"   : "Structure.Parts_Shell_wet_surface",
+                        "dimension" : 2,
+                        "variable_name" : "DISPLACEMENT"
+                    }
+                }
+            }
+        }
+    }
+}

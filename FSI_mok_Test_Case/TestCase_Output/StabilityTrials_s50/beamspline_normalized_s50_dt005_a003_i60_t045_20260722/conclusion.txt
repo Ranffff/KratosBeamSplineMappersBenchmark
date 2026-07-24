@@ -1,0 +1,6 @@
+status: stopped_repeated_nonconvergence_step_62
+last_valid_time: 3.05
+rel_l2_interval: None...None
+rel_l2_common_steps: None
+rel_l2: None
+restoration_verified: True

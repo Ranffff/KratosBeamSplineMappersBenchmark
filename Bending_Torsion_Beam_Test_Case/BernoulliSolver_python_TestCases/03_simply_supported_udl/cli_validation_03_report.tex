@@ -1,0 +1,204 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  frame=single,
+  backgroundcolor=\color{gray!6}
+}
+
+\title{BernoulliSolver CLI Validation Testcase 03}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Purpose}
+
+This report documents the execution of CLI validation testcase 03 from
+\texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver.py}. The case is a
+simply supported beam under a uniform distributed load represented by
+equivalent nodal forces and end moments.
+
+The terminal output of the executed run was saved to:
+
+\begin{lstlisting}
+Bending_Torsion_Beam_Test_Case/BernoulliSolver_python_TestCases/03_simply_supported_udl/cli_validation_03_terminal_output.txt
+\end{lstlisting}
+
+\section{Input Model}
+
+The input model is:
+
+\begin{lstlisting}
+Bending_Torsion_Beam_Test_Case/TestCase_Input/03_simply_supported_udl/simply_supported_udl.mdpa
+\end{lstlisting}
+
+The model contains 11 nodes and 10 two-node beam elements. The beam lies on the
+global $x$ axis:
+
+\begin{lstlisting}
+Node 1:  x = 0
+Node 11: x = 10
+Element length: 1
+\end{lstlisting}
+
+\section{Boundary Conditions And Loads}
+
+The supports are prescribed through command-line constraints:
+
+\begin{lstlisting}
+Node 1:
+  ux = 0
+  uy = 0
+  uz = 0
+  rx = 0
+
+Node 11:
+  uy = 0
+  uz = 0
+  rx = 0
+\end{lstlisting}
+
+The uniform distributed load is:
+
+\begin{equation}
+q_y = -1000 .
+\end{equation}
+
+It is represented by equivalent nodal loads:
+
+\begin{lstlisting}
+Node 1:  Fy = -500,  Mz = -83.3333333333
+Nodes 2-10: Fy = -1000
+Node 11: Fy = -500, Mz = +83.3333333333
+\end{lstlisting}
+
+\section{Command Used}
+
+The following command was run from the Kratos root directory:
+
+\begin{lstlisting}[language=bash]
+python3 Bending_Torsion_Beam_Test_Case/BernoulliSolver.py \
+  Bending_Torsion_Beam_Test_Case/TestCase_Input/03_simply_supported_udl/simply_supported_udl.mdpa \
+  --materials Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/StructuralMaterials.json \
+  --prescribe 1 ux 0 --prescribe 1 uy 0 --prescribe 1 uz 0 --prescribe 1 rx 0 \
+  --prescribe 11 uy 0 --prescribe 11 uz 0 --prescribe 11 rx 0 \
+  --load 1 0 -500 0 0 0 -83.3333333333 \
+  --load 2 0 -1000 0 0 0 0 \
+  --load 3 0 -1000 0 0 0 0 \
+  --load 4 0 -1000 0 0 0 0 \
+  --load 5 0 -1000 0 0 0 0 \
+  --load 6 0 -1000 0 0 0 0 \
+  --load 7 0 -1000 0 0 0 0 \
+  --load 8 0 -1000 0 0 0 0 \
+  --load 9 0 -1000 0 0 0 0 \
+  --load 10 0 -1000 0 0 0 0 \
+  --load 11 0 -500 0 0 0 83.3333333333 \
+  --output Bending_Torsion_Beam_Test_Case/BernoulliSolver_python_TestCases/03_simply_supported_udl
+\end{lstlisting}
+
+\section{Runtime Summary}
+
+The solver printed:
+
+\begin{lstlisting}
+Solved reduced system with 59 free DOFs.
+Read 11 nodes and 10 elements.
+Wrote VTK output to: Bending_Torsion_Beam_Test_Case/BernoulliSolver_python_TestCases/03_simply_supported_udl
+\end{lstlisting}
+
+\section{Nodal Results}
+
+The following table lists the nodal displacement in the load direction and the
+corresponding bending rotation around $z$.
+
+\begin{center}
+\begin{tabular}{rrrr}
+\toprule
+Node & $x$ & $u_y$ & $\theta_z$ \\
+\midrule
+1  & 0  &  0.000000000000000e+00 & -2.013855324633510e-07 \\
+2  & 1  & -1.975592073465477e-07 & -1.901079426454041e-07 \\
+3  & 2  & -3.737715482519807e-07 & -1.594973417109750e-07 \\
+4  & 3  & -5.117206379893772e-07 & -1.143869824391844e-07 \\
+5  & 4  & -5.993233446109359e-07 & -5.961011760915261e-08 \\
+6  & 5  & -6.293297889479755e-07 &  5.607720339794012e-23 \\
+7  & 6  & -5.993233446109358e-07 &  5.961011760915284e-08 \\
+8  & 7  & -5.117206379893771e-07 &  1.143869824391844e-07 \\
+9  & 8  & -3.737715482519807e-07 &  1.594973417109747e-07 \\
+10 & 9  & -1.975592073465479e-07 &  1.901079426454040e-07 \\
+11 & 10 &  0.000000000000000e+00 &  2.013855324633515e-07 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Analytical Reference}
+
+For a simply supported Euler-Bernoulli beam under a uniform distributed load,
+the maximum displacement at midspan and the support rotation are:
+
+\begin{equation}
+u_y(L/2) = \frac{5q_yL^4}{384EI_z},
+\end{equation}
+
+\begin{equation}
+\theta_z(0) = \frac{q_yL^3}{24EI_z}.
+\end{equation}
+
+Using:
+
+\begin{lstlisting}
+q_y = -1000
+L   = 10
+E   = 2.0690e11
+I_z = 1
+\end{lstlisting}
+
+the analytical values are:
+
+\begin{lstlisting}
+u_y(L/2)      = -6.293297889479620e-07
+theta_z(0)   = -2.013855324633478e-07
+\end{lstlisting}
+
+\section{Error Summary}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Quantity & Analytical & Python & Absolute error & Relative error \\
+\midrule
+$u_y(L/2)$
+& -6.293297889479620e-07
+& -6.293297889479755e-07
+& 1.344664803766202e-20
+& 2.136661615866065e-12\% \\
+$\theta_z(0)$
+& -2.013855324633478e-07
+& -2.013855324633510e-07
+& 3.202843331805323e-21
+& 1.590403884841251e-12\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Conclusion}
+
+CLI validation testcase 03 ran successfully. The Python Bernoulli solver
+matches the analytical midspan displacement and support rotation to
+near-machine precision for this discretized equivalent-nodal-load setup. The
+temporary terminal output block marked with
+\texttt{TEMP DEBUG OUTPUT - REMOVE AFTER VERIFICATION} also printed all nodal
+displacements and rotations directly to the terminal log.
+
+\end{document}

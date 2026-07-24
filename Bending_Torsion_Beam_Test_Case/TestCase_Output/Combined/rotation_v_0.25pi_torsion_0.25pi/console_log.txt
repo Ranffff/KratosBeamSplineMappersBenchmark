@@ -1,0 +1,69 @@
+================================================================================
+STRUCTURE-TO-SURFACE BEAM MAPPER COMPARISON
+================================================================================
+
+[CASE CONFIGURATION]
+  kinematics_mode : combined
+  error_type      : normalized_rmse
+  case_name       : rotation_v_0.25pi_torsion_0.25pi
+  tip_rotation_v  : 0.7853981633974483
+  tip_torsion     : 0.7853981633974483
+  beam_mdpa       : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+  surface_mdpa    : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+  vtk_output_path : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Combined/rotation_v_0.25pi_torsion_0.25pi
+
+[MESH]
+  beam    : 19 nodes, 18 elements
+  surface : 24 nodes, 20 elements
+
+[ERROR SUMMARY]
+  reference_mapper : beam_mapper(use_corotation=true)
+  selected_error   : normalized RMSE
+  reference_scale  : 1.17953886e+00
+
+  mapper                 absolute error   relative error
+  -------------------- ---------------- ----------------
+  beam_spline_mapper     7.18985495e-02        6.095479%
+  beam_mapper_linear     7.18985495e-02        6.095479%
+
+[AUXILIARY MAXIMA]
+  quantity                                      value     node
+  ---------------------------------- ---------------- --------
+  corotation displacement norm         4.53718242e+00       23
+  spline vs. linear                    5.62281655e-15       20
+  spline vs. corotation                3.03210602e-01       18
+  linear vs. corotation                3.03210602e-01       18
+
+[SAMPLE NODES]
+  node    3  x0= 0.000 y0=-0.500 z0=-0.500
+    spline      [-6.661338e-16,  5.107026e-15,  0.000000e+00]
+    linear      [ 0.000000e+00,  0.000000e+00,  0.000000e+00]
+    corotation  [-1.158835e-04, -2.161941e-06,  2.175380e-06]
+  node    1  x0= 0.000 y0=-0.500 z0= 0.500
+    spline      [-6.661338e-16,  5.107026e-15,  0.000000e+00]
+    linear      [ 0.000000e+00,  0.000000e+00,  0.000000e+00]
+    corotation  [ 1.219384e-04,  2.161969e-06,  2.147091e-06]
+  node    4  x0= 0.000 y0= 0.500 z0=-0.500
+    spline      [ 6.661338e-16,  5.107026e-15,  0.000000e+00]
+    linear      [ 0.000000e+00,  0.000000e+00,  0.000000e+00]
+    corotation  [-1.219384e-04, -2.161969e-06, -2.147091e-06]
+  node    2  x0= 0.000 y0= 0.500 z0= 0.500
+    spline      [ 6.661338e-16,  5.107026e-15,  0.000000e+00]
+    linear      [ 0.000000e+00,  0.000000e+00,  0.000000e+00]
+    corotation  [ 1.158835e-04,  2.161941e-06, -2.175380e-06]
+
+================================================================================
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+[WARNING] BeamSplineMapper: No pivoting direct linear solver is registered. Using AMGCL GMRES fallback.

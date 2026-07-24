@@ -1,0 +1,24 @@
+Begin ModelPartData
+End ModelPartData
+
+Begin Properties 0
+End Properties
+
+Begin Nodes
+1 0.0 0.0 0.0
+2 1.0 0.0 0.0
+End Nodes
+
+Begin Elements CrBeamElement3D2N
+1 0 1 2
+End Elements
+
+Begin SubModelPart Parts_Beam_beam
+Begin SubModelPartNodes
+1
+2
+End SubModelPartNodes
+Begin SubModelPartElements
+1
+End SubModelPartElements
+End SubModelPart

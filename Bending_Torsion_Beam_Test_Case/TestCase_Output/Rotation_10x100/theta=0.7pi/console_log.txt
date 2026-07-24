@@ -1,0 +1,31 @@
+STRUCTURE TO SURFACE BEAM MAPPER COMPARISON
+kinematics_mode: rotation
+tip_rotation: 2.199114857512855
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_10x100.mdpa
+vtk_output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Rotation_10x100/theta=0.7pi
+
+ModelPartIO:   [Reading Nodes    : 1001 nodes read]
+ModelPartIO:   [Reading Elements : 1000 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Total Lines Read : 5025]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+mesh: beam=1001 nodes/1000 elems, surface=4040 nodes/4000 elems
+reference_mapper: beam_mapper(use_corotation=true)
+max_norms:
+  corotation_displacement: 11.796404419450969 node: 4021
+  spline_vs_linear: 4.4421478607497057e-14 node: 3541
+  spline_error_to_corotation: 3.4994160889817725e-10 node: 4021 percent: 2.966510781210266e-09
+  linear_error_to_corotation: 3.4997578044709824e-10 node: 4021 percent: 2.9668004588756454e-09
+samples: node_id x y z | spline | linear | corotation
+165 0.0 -0.5 -0.5 | (-4.9960036108132044e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (1.0842021724855044e-19, 0.0, 0.0)
+1 0.0 -0.5 0.5 | (-4.9960036108132044e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (1.0842021724855044e-19, 0.0, 0.0)
+432 0.0 0.5 -0.5 | (4.9960036108132044e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (-1.0842021724855044e-19, 0.0, 0.0)
+164 0.0 0.5 0.5 | (4.9960036108132044e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (-1.0842021724855044e-19, 0.0, 0.0)

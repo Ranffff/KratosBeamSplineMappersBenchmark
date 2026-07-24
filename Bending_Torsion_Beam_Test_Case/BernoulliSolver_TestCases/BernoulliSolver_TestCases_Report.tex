@@ -1,0 +1,60 @@
+
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\begin{document}
+\section*{BernoulliSolver Command-Line Test Cases}
+
+This report summarizes five command-line validation simulations executed with \texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver}.  Each simulation was launched using an mdpa mesh, a material json file, and command-line boundary-condition/load options.  No testcase-specific ProjectParameters file was used for the command-line runs.
+
+\subsection*{Material and Section Data}
+The tests use
+\[
+E = 206.9\times 10^9,\qquad \nu=0.29,\qquad G=\frac{E}{2(1+\nu)},\qquad A=I_z=J=1.0,\qquad L=10.0.
+\]
+The load convention is global: \texttt{--load node fx fy fz mx my mz}.
+
+\subsection*{Analytical References}
+\begin{itemize}
+\item Cantilever point load: $v(L)=PL^3/(3EI_z)$.
+\item Simply supported center point load: $v(L/2)=PL^3/(48EI_z)$.
+\item Simply supported UDL: $v(L/2)=5qL^4/(384EI_z)$.
+\item Pure torsion: $\theta_x(L)=TL/(GJ)$.
+\item Combined loading: superposition of $\theta_x(L)=TL/(GJ)$, $v_y(L)=M_zL^2/(2EI_z)$, and $\theta_z(L)=M_zL/(EI_z)$.
+\end{itemize}
+
+\subsection*{Numerical Comparison}
+\begin{table}[h]
+\centering
+\scriptsize
+\begin{tabular}{llrrr}
+\hline
+Case & Quantity & Numerical & Analytical & Error (\%) \\
+\hline
+Cantilever end point load & tip Uy & -1.611084300000e-06 & -1.611084259707e-06 & 2.501e-06 \\
+Simply supported center point load & center Uy & -1.006927700000e-07 & -1.006927662317e-07 & 3.742e-06 \\
+Simply supported uniform distributed load & center Uy & -6.293298000000e-07 & -6.293297889480e-07 & 1.756e-06 \\
+Fixed-free torsion & tip Rx & 1.246979200000e-07 & 1.246979217013e-07 & 1.364e-06 \\
+Combined bending and torsion & tip Rx & 1.246979200000e-07 & 1.246979217013e-07 & 1.364e-06 \\
+Combined bending and torsion & tip Uy & 1.208313200000e-07 & 1.208313194780e-07 & 4.320e-07 \\
+Combined bending and torsion & tip Rz & 2.416626400000e-08 & 2.416626389560e-08 & 4.320e-07 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection*{Qualitative Evaluation}
+The cantilever point-load case shows the expected downward cubic bending shape with zero fixed-end displacement and rotation.  The simply supported point-load and UDL cases show zero transverse displacement at the supports and maximum downward displacement at midspan.  The torsion case has negligible translational displacement and a nonzero twist about the beam axis.  The combined loading case reproduces linear superposition of torsion and pure end bending.
+
+\subsection*{Output Structure}
+The five VTK output folders are:
+\begin{itemize}
+\item \texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver\_TestCases/01\_cantilever\_point\_load/BeamModelPart\_0\_0.vtk}
+\item \texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver\_TestCases/02\_simply\_supported\_point\_load/BeamModelPart\_0\_0.vtk}
+\item \texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver\_TestCases/03\_simply\_supported\_udl/BeamModelPart\_0\_0.vtk}
+\item \texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver\_TestCases/04\_torsion/BeamModelPart\_0\_0.vtk}
+\item \texttt{Bending\_Torsion\_Beam\_Test\_Case/BernoulliSolver\_TestCases/05\_combined\_bending\_torsion/BeamModelPart\_0\_0.vtk}
+
+\end{itemize}
+
+\subsection*{Conclusion}
+All five command-line simulations agree with the corresponding Euler--Bernoulli analytical solutions to VTK ASCII output precision.  The maximum reported percentage errors are on the order of $10^{-6}$ percent for the scalar quantities checked, indicating that the stiffness assembly, local-to-global transformation, command-line boundary conditions, command-line loads, and VTK displacement/rotation output are consistent for these benchmark cases.
+\end{document}

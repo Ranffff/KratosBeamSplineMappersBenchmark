@@ -1,0 +1,11 @@
+{
+  "beam_elements": 32,
+  "surface_divisions": {
+    "xi": 16,
+    "eta": 80
+  },
+  "mapper": "plain",
+  "reference": "prescribed analytical Rz rigid-body displacement; no mapper-to-mapper reference",
+  "relative_l2_definition": "sqrt(sum(||u_map-u_exact||^2)/sum(||u_exact||^2))",
+  "exact_span_tolerance": 1e-10
+}

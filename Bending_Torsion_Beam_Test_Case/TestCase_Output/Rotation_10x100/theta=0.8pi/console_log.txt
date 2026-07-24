@@ -1,0 +1,31 @@
+STRUCTURE TO SURFACE BEAM MAPPER COMPARISON
+kinematics_mode: rotation
+tip_rotation: 2.5132741228718345
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_10x100.mdpa
+vtk_output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Rotation_10x100/theta=0.8pi
+
+ModelPartIO:   [Reading Nodes    : 1001 nodes read]
+ModelPartIO:   [Reading Elements : 1000 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Total Lines Read : 5025]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+ModelPartIO:   [Reading Nodes    : 4040 nodes read]
+ModelPartIO:   [Reading Elements : 4000 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 16100]
+mesh: beam=1001 nodes/1000 elems, surface=4040 nodes/4000 elems
+reference_mapper: beam_mapper(use_corotation=true)
+max_norms:
+  corotation_displacement: 13.474084640777079 node: 4021
+  spline_vs_linear: 2.131933569020253e-14 node: 3745
+  spline_error_to_corotation: 4.3899438654708406e-10 node: 4021 percent: 3.2580646348215783e-09
+  linear_error_to_corotation: 4.389974320268992e-10 node: 4021 percent: 3.2580872373203476e-09
+samples: node_id x y z | spline | linear | corotation
+165 0.0 -0.5 -0.5 | (-5.773159728050814e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 5.551115123125783e-17, 0.0)
+1 0.0 -0.5 0.5 | (-5.773159728050814e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, 5.551115123125783e-17, 0.0)
+432 0.0 0.5 -0.5 | (5.773159728050814e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, -5.551115123125783e-17, 0.0)
+164 0.0 0.5 0.5 | (5.773159728050814e-15, 0.0, 0.0) | (0.0, 0.0, 0.0) | (0.0, -5.551115123125783e-17, 0.0)

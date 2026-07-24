@@ -1,0 +1,52 @@
+INVERSE MAP BEAM MAPPER COMPARISON
+case_index: 2
+kinematics_mode: rotation
+parameter_value: 1.5707963267948966
+force_mode: constant_y
+perturbation_mode: bending_y
+epsilon: 1e-07
+reference_mapper: beam_mapper_corotation
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/InverseMap_Mapper_Comparison/theta=0.5pi
+
+mapper: beam_spline_mapper surface_work: 1.3200002635382901e+00 beam_work: 1.3199999999985985e+00 relative_work_error: 1.9965124167372955e-07 inverse_s: 0.000792
+mapper: beam_spline_mapper_with_rotational_recovery surface_work: 1.3243635388349162e+00 beam_work: 1.3243636979758524e+00 relative_work_error: 1.2016407309408672e-07 inverse_s: 0.007722
+mapper: beam_mapper_linear surface_work: 1.3200000259505629e+00 beam_work: 1.3214814814811828e+00 relative_work_error: 1.1210565954806022e-03 inverse_s: 0.000090
+mapper: beam_mapper_corotation surface_work: 1.3206295268464174e+00 beam_work: 1.3214814814811835e+00 relative_work_error: 6.4469661263141364e-04 inverse_s: 0.000086
+
+load_comparison_reference: beam_mapper_corotation
+beam_spline_mapper combined_load_diff_percent: 11.94687828 max_combined_node: 12 beam_work_diff_percent: 0.11210762
+beam_spline_mapper_with_rotational_recovery combined_load_diff_percent: 35.25990031 max_combined_node: 15 beam_work_diff_percent: 0.21810495
+beam_mapper_linear combined_load_diff_percent: 0.00000000 max_combined_node: 1 beam_work_diff_percent: 0.00000000
+beam_mapper_corotation combined_load_diff_percent: 0.00000000 max_combined_node: None beam_work_diff_percent: 0.00000000
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+BeamSplineMapper: No linear solver specified. Using SparseLU.
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+BeamSplineMapperWithRotationalRecovery: No linear solver specified. Using SparseLU.
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]

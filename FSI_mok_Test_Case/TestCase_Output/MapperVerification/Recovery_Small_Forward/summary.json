@@ -1,0 +1,38 @@
+[
+  {
+    "theta_rad": 0.017453292519943295,
+    "sin_theta": 0.01745240643728351,
+    "theta_minus_sin_theta": 8.860826597838212e-07,
+    "relative_l2_error": 0.0009176568464779127,
+    "max_displacement_error": 1.5231515340509587e-05,
+    "surface_nodes": 1377,
+    "coordinate_mutation": 0.0
+  },
+  {
+    "theta_rad": 0.5235987755982988,
+    "sin_theta": 0.49999999999999994,
+    "theta_minus_sin_theta": 0.02359877559829887,
+    "relative_l2_error": 0.028854196448049315,
+    "max_displacement_error": 0.014204506774290481,
+    "surface_nodes": 1377,
+    "coordinate_mutation": 0.0
+  },
+  {
+    "theta_rad": 1.5707963267948966,
+    "sin_theta": 1.0,
+    "theta_minus_sin_theta": 0.5707963267948966,
+    "relative_l2_error": 0.11283999696187584,
+    "max_displacement_error": 0.1517640862236702,
+    "surface_nodes": 1377,
+    "coordinate_mutation": 0.0
+  },
+  {
+    "theta_rad": 2.9670597283903604,
+    "sin_theta": 0.17364817766693028,
+    "theta_minus_sin_theta": 2.7934115507234303,
+    "relative_l2_error": 0.3129033300321882,
+    "max_displacement_error": 0.5928916779925221,
+    "surface_nodes": 1377,
+    "coordinate_mutation": 0.0
+  }
+]

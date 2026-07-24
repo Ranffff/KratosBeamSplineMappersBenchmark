@@ -1,0 +1,32 @@
+BEAM SPLINE INVERSE MAP ADJOINT CHECK
+case_index: 3
+kinematics_mode: torsion
+parameter_value: 0.9424777960769379
+force_mode: torsional_ring
+perturbation_mode: torsion
+epsilon: 1e-06
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+output_path: /root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/MapperVerification/Recovery_Finite_Adjoint/torsion=0.3pi
+
+mesh: beam=19 nodes/18 elems, surface=24 nodes/20 elems/0 conditions
+surface_directional_work: 1.7967399612572876e-01
+beam_generalized_work: 1.7967399632254796e-01
+absolute_error: 1.9681919982694751e-10
+relative_error: 1.9681919982694751e-10
+timings_seconds:
+  setup: 0.326606
+  forward_map: 0.015321
+  inverse_map: 0.010268
+  perturbed_forward_map: 0.007773
+  total: 0.370278
+tolerances: absolute=1.000e-09 relative=1.000e-07
+status: PASS
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+BeamSplineMapperWithRecoveryOfRotations: No linear solver specified. Using SparseLU.

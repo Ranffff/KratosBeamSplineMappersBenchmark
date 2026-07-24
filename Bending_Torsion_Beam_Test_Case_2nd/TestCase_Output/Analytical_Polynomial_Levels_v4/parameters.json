@@ -1,0 +1,12 @@
+{
+  "source_field_definitions": "/root/dev/Kratos/Bending_Torsion_Beam_Test_Case_2nd/beam_mapper_benchmark.py",
+  "beam_elements": 32,
+  "surface_divisions": {
+    "xi": 8,
+    "eta": 40
+  },
+  "regularization": 0.0,
+  "max_analytical_theta_minus_half_curl": 1.0548391355371095e-13,
+  "error": "sqrt(sum(||u_map-u_exact||^2)/sum(||u_exact||^2))",
+  "reference_policy": "analytical only; no other mapper is a reference"
+}

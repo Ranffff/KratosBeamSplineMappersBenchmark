@@ -1,0 +1,15 @@
+# run_started: 2026-06-11T11:43:00
+# mesh_preset: small
+# beam_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+# surface_mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+# epsilon: 9.9999999999999995e-08
+# absolute_tolerance: 2.0000000000000000e-08
+# relative_tolerance: 2.0000000000000002e-05
+case_index status kinematics_mode parameter_value force_mode perturbation_mode beam_nodes beam_elements surface_nodes surface_elements surface_conditions surface_directional_work beam_generalized_work absolute_error relative_error setup_s forward_map_s inverse_map_s perturbed_forward_map_s total_s
+1 PASS bending_y 7.8539816339744828e-01 constant_y bending_y 19 18 24 20 0 1.3200001391933114e+00 1.3199999999983878e+00 1.3919492358738239e-07 1.0545068856769080e-07 0.35314854 0.00039210 0.00081169 0.00035476 0.35853090
+2 PASS bending_z 6.2831853071795862e-01 constant_z bending_z 19 18 24 20 0 1.9967842748158660e+00 1.9967841975297691e+00 7.7286096855644359e-08 3.8705281201581641e-08 0.09360926 0.00040719 0.00084869 0.00035500 0.09869963
+3 PASS torsion 9.4247779607693793e-01 torsional_ring torsion 19 18 24 20 0 1.7967399679186258e-01 1.7967399632254788e-01 4.6931469821487326e-10 4.6931469821487326e-10 0.09897389 0.00040402 0.00081238 0.00038547 0.10385424
+4 PASS displacement_y 1.0000000000000000e+00 mixed mixed 19 18 24 20 0 1.0961341279008829e+00 1.0961341923700221e+00 6.4469139138267906e-08 5.8815006033955608e-08 0.11062792 0.00038393 0.00082488 0.00035810 0.11545144
+aggregate_timings_seconds
+setup_s forward_map_s inverse_map_s perturbed_forward_map_s total_s
+0.65635960 0.00158724 0.00329764 0.00145333 0.67653621

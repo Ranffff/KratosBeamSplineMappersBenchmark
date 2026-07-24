@@ -1,0 +1,16 @@
+================================================================================
+BEAM SPLINE FLUID-MESH REFINEMENT
+================================================================================
+
+[CASE CONFIGURATION]
+  mapper           : beam_spline_mapper
+  reference_mapper : beam_mapper(use_corotation=true), 16x160
+  beam_mdpa        : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+  fluid_mesh       : 2x20
+  tip_rotation     : 1.5707963267948966
+  vtk_output_path  : /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Fluid_Mesh_Refinement/2x20
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+[WARNING] BeamSplineMapper: No pivoting direct linear solver is registered. Using AMGCL GMRES fallback.

@@ -1,0 +1,27 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{array}
+\usepackage{amsmath}
+\begin{document}
+\section*{Python Bernoulli Solver Cross-Verification Summary}
+This report compares \texttt{BernoulliSolver.py} against the existing C++ validation VTK output and standard Euler-Bernoulli closed-form expressions. All Python runs reuse the same loads, boundary conditions, material values, and meshes as the C++ validation cases. For the UDL case, the original temporary mdpa was no longer present, so the 11-node/10-element mesh was reconstructed from the previous C++ VTK geometry before running Python.
+
+\begin{center}
+\begin{tabular}{|p{0.29\linewidth}|p{0.14\linewidth}|r|r|r|r|}
+\hline
+Case & Quantity & Analytical & Python & Py. vs. analytical & Py. vs. C++ \\
+\hline
+01\_cantilever\_point\_load & $v_y(L)$ & -1.61108426e-06 & -1.61108430e-06 & 2.501e-06\% & 0.000e+00\% \\
+01\_cantilever\_point\_load & $\theta_z(L)$ & -2.41662639e-07 & -2.41662630e-07 & 3.706e-06\% & 0.000e+00\% \\
+02\_simply\_supported\_point\_load & $v_y(L/2)$ & -1.00692766e-07 & -1.00692770e-07 & 3.742e-06\% & 0.000e+00\% \\
+02\_simply\_supported\_point\_load & $\theta_z(0)$ & -3.02078299e-08 & -3.02078290e-08 & 2.878e-06\% & 0.000e+00\% \\
+03\_simply\_supported\_udl & $v_y(L/2)$ & -6.29329789e-07 & -6.29329800e-07 & 1.756e-06\% & 0.000e+00\% \\
+03\_simply\_supported\_udl & $\theta_z(0)$ & -2.01385532e-07 & -2.01385530e-07 & 1.223e-06\% & 0.000e+00\% \\
+04\_torsion & $\theta_x(L)$ & 1.24697922e-07 & 1.24697920e-07 & 1.364e-06\% & 0.000e+00\% \\
+05\_combined\_bending\_torsion & $\theta_x(L)$ & 1.24697922e-07 & 1.24697920e-07 & 1.364e-06\% & 0.000e+00\% \\
+05\_combined\_bending\_torsion & $v_y(L)$ & 1.20831319e-07 & 1.20831320e-07 & 4.320e-07\% & 0.000e+00\% \\
+05\_combined\_bending\_torsion & $\theta_z(L)$ & 2.41662639e-08 & 2.41662640e-08 & 4.320e-07\% & 0.000e+00\% \\
+\hline
+\end{tabular}
+\end{center}
+\end{document}

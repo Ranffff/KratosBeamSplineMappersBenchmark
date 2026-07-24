@@ -1,0 +1,6 @@
+beam_spline_mapper
+  1%: theta = 0.219911
+  10%: not reached
+linear beam mapper
+  1%: theta = 0.219911
+  10%: not reached

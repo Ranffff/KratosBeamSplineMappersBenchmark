@@ -1,0 +1,41 @@
+STRUCTURE TO SURFACE BEAM MAPPER COMPARISON
+kinematics_mode: combined
+error_type: normalized_rmse
+case_name: rotation_v_0.25pi_displacement_v_1_torsion_0.25pi
+tip_rotation_v: 0.7853981633974483
+tip_displacement_v: 1.0
+tip_torsion: 0.7853981633974483
+beam mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/beam_geometry/beam_geometry_coarse.mdpa
+surface mdpa: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/Bending_Torsion_Beam_Test_Case/fluid_surface_mesh/fluid_surface_mesh_1x5.mdpa
+vtk_output_path: /root/dev/Kratos/Bending_Torsion_Beam_Test_Case/TestCase_Output/Combined/rotation_v_0.25pi_displacement_v_1_torsion_0.25pi
+
+mesh: beam=19 nodes/18 elems, surface=24 nodes/20 elems
+reference_mapper: beam_mapper(use_corotation=true)
+selected_error: normalized RMSE
+  reference_scale: 1.4863193280521716
+  spline_error_to_corotation: 0.08814435092890179 percent: 5.930377763735023
+  linear_error_to_corotation: 0.08814435092890247 percent: 5.930377763735068
+max_nodal_norms_auxiliary:
+  corotation_displacement: 5.573564533863825 node: 23
+  spline_vs_linear: 1.472050649233265e-14 node: 3
+  spline_vs_corotation: 0.3717686117984986 node: 18
+  linear_vs_corotation: 0.3717686117985029 node: 18
+samples: node_id x y z | spline | linear | corotation
+3 0.0 -0.5 -0.5 | (1.3877787807814457e-15, -1.4654943925052066e-14, 0.0) | (0.0, 0.0, 0.0) | (-0.0001592658744006295, -4.085044631674251e-06, 4.110443833860167e-06)
+1 0.0 -0.5 0.5 | (1.3877787807814457e-15, -1.4654943925052066e-14, 0.0) | (0.0, 0.0, 0.0) | (0.0001675883566888644, 4.085112617235875e-06, 4.056993612500115e-06)
+4 0.0 0.5 -0.5 | (-1.3877787807814457e-15, -1.4654943925052066e-14, 0.0) | (0.0, 0.0, 0.0) | (-0.0001675883566888644, -4.085112617235875e-06, -4.056993612500115e-06)
+2 0.0 0.5 0.5 | (-1.3877787807814457e-15, -1.4654943925052066e-14, 0.0) | (0.0, 0.0, 0.0) | (0.0001592658744006295, 4.085044631674251e-06, -4.110443833860167e-06)
+ModelPartIO:   [Reading Nodes    : 19 nodes read]
+ModelPartIO:   [Reading Elements : 18 elements read] [Type: CrBeamElement3D2N]
+ModelPartIO:   [Reading Conditions : 1 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 116]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+ModelPartIO:   [Reading Nodes    : 24 nodes read]
+ModelPartIO:   [Reading Elements : 20 elements read] [Type: ShellThinElementCorotational3D4N]
+ModelPartIO:   [Total Lines Read : 108]
+[WARNING] BeamSplineMapper: No pivoting direct linear solver is registered. Using AMGCL GMRES fallback.

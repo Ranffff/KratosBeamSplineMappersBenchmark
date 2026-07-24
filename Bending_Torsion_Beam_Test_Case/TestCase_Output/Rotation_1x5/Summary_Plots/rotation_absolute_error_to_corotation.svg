@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600">
+<rect width="100%" height="100%" fill="white"/>
+<text x="480.0" y="32" text-anchor="middle" font-family="Arial" font-size="20">Mapper Absolute Error vs Prescribed Tip Rotation</text>
+<line x1="90" y1="70" x2="90" y2="520" stroke="#222" stroke-width="1.2"/>
+<line x1="90" y1="520" x2="730" y2="520" stroke="#222" stroke-width="1.2"/>
+<line x1="90.00" y1="520" x2="90.00" y2="525" stroke="#222"/>
+<line x1="90.00" y1="70" x2="90.00" y2="520" stroke="#ddd"/>
+<text x="90.00" y="544" text-anchor="middle" font-family="Arial" font-size="12">0</text>
+<line x1="168.43" y1="520" x2="168.43" y2="525" stroke="#222"/>
+<line x1="168.43" y1="70" x2="168.43" y2="520" stroke="#ddd"/>
+<text x="168.43" y="544" text-anchor="middle" font-family="Arial" font-size="12">0.25π</text>
+<line x1="246.86" y1="520" x2="246.86" y2="525" stroke="#222"/>
+<line x1="246.86" y1="70" x2="246.86" y2="520" stroke="#ddd"/>
+<text x="246.86" y="544" text-anchor="middle" font-family="Arial" font-size="12">0.5π</text>
+<line x1="325.29" y1="520" x2="325.29" y2="525" stroke="#222"/>
+<line x1="325.29" y1="70" x2="325.29" y2="520" stroke="#ddd"/>
+<text x="325.29" y="544" text-anchor="middle" font-family="Arial" font-size="12">0.75π</text>
+<line x1="403.73" y1="520" x2="403.73" y2="525" stroke="#222"/>
+<line x1="403.73" y1="70" x2="403.73" y2="520" stroke="#ddd"/>
+<text x="403.73" y="544" text-anchor="middle" font-family="Arial" font-size="12">π</text>
+<line x1="482.16" y1="520" x2="482.16" y2="525" stroke="#222"/>
+<line x1="482.16" y1="70" x2="482.16" y2="520" stroke="#ddd"/>
+<text x="482.16" y="544" text-anchor="middle" font-family="Arial" font-size="12">1.25π</text>
+<line x1="560.59" y1="520" x2="560.59" y2="525" stroke="#222"/>
+<line x1="560.59" y1="70" x2="560.59" y2="520" stroke="#ddd"/>
+<text x="560.59" y="544" text-anchor="middle" font-family="Arial" font-size="12">1.5π</text>
+<line x1="639.02" y1="520" x2="639.02" y2="525" stroke="#222"/>
+<line x1="639.02" y1="70" x2="639.02" y2="520" stroke="#ddd"/>
+<text x="639.02" y="544" text-anchor="middle" font-family="Arial" font-size="12">1.75π</text>
+<line x1="717.45" y1="520" x2="717.45" y2="525" stroke="#222"/>
+<line x1="717.45" y1="70" x2="717.45" y2="520" stroke="#ddd"/>
+<text x="717.45" y="544" text-anchor="middle" font-family="Arial" font-size="12">2π</text>
+<line x1="85" y1="520.00" x2="90" y2="520.00" stroke="#222"/>
+<line x1="90" y1="520.00" x2="730" y2="520.00" stroke="#ddd"/>
+<text x="80" y="524.00" text-anchor="end" font-family="Arial" font-size="12">0.001</text>
+<line x1="85" y1="407.50" x2="90" y2="407.50" stroke="#222"/>
+<line x1="90" y1="407.50" x2="730" y2="407.50" stroke="#ddd"/>
+<text x="80" y="411.50" text-anchor="end" font-family="Arial" font-size="12">0.01</text>
+<line x1="85" y1="295.00" x2="90" y2="295.00" stroke="#222"/>
+<line x1="90" y1="295.00" x2="730" y2="295.00" stroke="#ddd"/>
+<text x="80" y="299.00" text-anchor="end" font-family="Arial" font-size="12">0.1</text>
+<line x1="85" y1="182.50" x2="90" y2="182.50" stroke="#222"/>
+<line x1="90" y1="182.50" x2="730" y2="182.50" stroke="#ddd"/>
+<text x="80" y="186.50" text-anchor="end" font-family="Arial" font-size="12">1</text>
+<line x1="85" y1="70.00" x2="90" y2="70.00" stroke="#222"/>
+<line x1="90" y1="70.00" x2="730" y2="70.00" stroke="#ddd"/>
+<text x="80" y="74.00" text-anchor="end" font-family="Arial" font-size="12">10</text>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2.2" points="96.27,519.61 102.55,450.83 105.69,428.51 108.82,410.16 111.96,394.57 115.10,381.00 121.37,358.13 137.06,315.81 152.75,285.10 168.43,261.11 184.12,241.83 215.49,213.59 246.86,195.22 278.24,183.39 309.61,175.89 340.98,171.30 372.35,167.20 403.72,171.31 466.47,170.60 560.59,167.21 717.45,170.53"/>
+<circle cx="96.27" cy="519.61" r="3.4" fill="#1f77b4"/>
+<circle cx="102.55" cy="450.83" r="3.4" fill="#1f77b4"/>
+<circle cx="105.69" cy="428.51" r="3.4" fill="#1f77b4"/>
+<circle cx="108.82" cy="410.16" r="3.4" fill="#1f77b4"/>
+<circle cx="111.96" cy="394.57" r="3.4" fill="#1f77b4"/>
+<circle cx="115.10" cy="381.00" r="3.4" fill="#1f77b4"/>
+<circle cx="121.37" cy="358.13" r="3.4" fill="#1f77b4"/>
+<circle cx="137.06" cy="315.81" r="3.4" fill="#1f77b4"/>
+<circle cx="152.75" cy="285.10" r="3.4" fill="#1f77b4"/>
+<circle cx="168.43" cy="261.11" r="3.4" fill="#1f77b4"/>
+<circle cx="184.12" cy="241.83" r="3.4" fill="#1f77b4"/>
+<circle cx="215.49" cy="213.59" r="3.4" fill="#1f77b4"/>
+<circle cx="246.86" cy="195.22" r="3.4" fill="#1f77b4"/>
+<circle cx="278.24" cy="183.39" r="3.4" fill="#1f77b4"/>
+<circle cx="309.61" cy="175.89" r="3.4" fill="#1f77b4"/>
+<circle cx="340.98" cy="171.30" r="3.4" fill="#1f77b4"/>
+<circle cx="372.35" cy="167.20" r="3.4" fill="#1f77b4"/>
+<circle cx="403.72" cy="171.31" r="3.4" fill="#1f77b4"/>
+<circle cx="466.47" cy="170.60" r="3.4" fill="#1f77b4"/>
+<circle cx="560.59" cy="167.21" r="3.4" fill="#1f77b4"/>
+<circle cx="717.45" cy="170.53" r="3.4" fill="#1f77b4"/>
+<line x1="756" y1="94" x2="780" y2="94" stroke="#1f77b4" stroke-width="2.2"/>
+<text x="788" y="98" font-family="Arial" font-size="12">beam_spline_mapper vs co-rotation</text>
+<polyline fill="none" stroke="#d62728" stroke-width="2.2" points="96.27,519.61 102.55,450.83 105.69,428.51 108.82,410.16 111.96,394.57 115.10,381.00 121.37,358.13 137.06,315.81 152.75,285.10 168.43,261.11 184.12,241.83 215.49,213.59 246.86,195.22 278.24,183.39 309.61,175.89 340.98,171.30 372.35,167.20 403.72,171.31 466.47,170.60 560.59,167.21 717.45,170.53"/>
+<rect x="93.27" y="516.61" width="6" height="6" fill="#d62728"/>
+<rect x="99.55" y="447.83" width="6" height="6" fill="#d62728"/>
+<rect x="102.69" y="425.51" width="6" height="6" fill="#d62728"/>
+<rect x="105.82" y="407.16" width="6" height="6" fill="#d62728"/>
+<rect x="108.96" y="391.57" width="6" height="6" fill="#d62728"/>
+<rect x="112.10" y="378.00" width="6" height="6" fill="#d62728"/>
+<rect x="118.37" y="355.13" width="6" height="6" fill="#d62728"/>
+<rect x="134.06" y="312.81" width="6" height="6" fill="#d62728"/>
+<rect x="149.75" y="282.10" width="6" height="6" fill="#d62728"/>
+<rect x="165.43" y="258.11" width="6" height="6" fill="#d62728"/>
+<rect x="181.12" y="238.83" width="6" height="6" fill="#d62728"/>
+<rect x="212.49" y="210.59" width="6" height="6" fill="#d62728"/>
+<rect x="243.86" y="192.22" width="6" height="6" fill="#d62728"/>
+<rect x="275.24" y="180.39" width="6" height="6" fill="#d62728"/>
+<rect x="306.61" y="172.89" width="6" height="6" fill="#d62728"/>
+<rect x="337.98" y="168.30" width="6" height="6" fill="#d62728"/>
+<rect x="369.35" y="164.20" width="6" height="6" fill="#d62728"/>
+<rect x="400.72" y="168.31" width="6" height="6" fill="#d62728"/>
+<rect x="463.47" y="167.60" width="6" height="6" fill="#d62728"/>
+<rect x="557.59" y="164.21" width="6" height="6" fill="#d62728"/>
+<rect x="714.45" y="167.53" width="6" height="6" fill="#d62728"/>
+<line x1="756" y1="122" x2="780" y2="122" stroke="#d62728" stroke-width="2.2"/>
+<text x="788" y="126" font-family="Arial" font-size="12">linear beam mapper vs co-rotation</text>
+<text x="410.0" y="575" text-anchor="middle" font-family="Arial" font-size="14">prescribed tip rotation [rad]</text>
+<text x="22" y="295.0" text-anchor="middle" transform="rotate(-90 22 295.0)" font-family="Arial" font-size="14">max absolute displacement error to co-rotation</text>
+</svg>

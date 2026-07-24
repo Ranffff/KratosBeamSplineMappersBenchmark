@@ -1,0 +1,19 @@
+case,basis,basis_label,kernel,kernel_radius,regularization,beam_elements,characteristic_h,evaluation_nodes,rmse,max_displacement_error,relative_l2_error
+constant_translation,line_adapted,line-adapted,gaussian,0.25,1e-10,16,0.0625,369,3.334667653299375e-17,6.613633252161577e-17,3.3346676532993754e-14
+constant_translation,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,16,0.0625,369,1.852119007225495e-17,6.049848122469115e-17,1.852119007225495e-14
+constant_rotation,line_adapted,line-adapted,gaussian,0.25,1e-10,16,0.0625,369,6.909736407501521e-17,1.3400738851920835e-16,1.0704517613174582e-13
+constant_rotation,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,16,0.0625,369,8.764082186997478e-17,3.3306690738754696e-16,1.3577257742013722e-13
+linear_centerline_displacement,line_adapted,line-adapted,gaussian,0.25,1e-10,16,0.0625,369,1.1579178364354594e-16,3.3393426912553537e-16,9.965769992869017e-14
+linear_centerline_displacement,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,16,0.0625,369,1.149894680504973e-16,2.774473359390406e-16,9.89671766108502e-14
+linear_varying_rotation,line_adapted,line-adapted,gaussian,0.25,1e-10,16,0.0625,369,1.1749398525623872e-05,3.844183241952237e-05,0.031331729401663656
+linear_varying_rotation,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,16,0.0625,369,6.678390210723868e-17,2.2789929665645303e-16,1.7809040561930312e-13
+curl_compatible_beam_field,line_adapted,line-adapted,gaussian,0.25,1e-10,4,0.25,1377,2.9533792771071598e-05,0.00011362354591741499,0.03584102224369385
+curl_compatible_beam_field,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,4,0.25,1377,2.0541715898780983e-05,7.351563133388287e-05,0.024928599660690835
+curl_compatible_beam_field,line_adapted,line-adapted,gaussian,0.25,1e-10,8,0.125,1377,3.154618202963973e-05,0.00013649901898428983,0.03828317685412231
+curl_compatible_beam_field,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,8,0.125,1377,2.182778821455215e-05,9.052527551561655e-05,0.0264893252618301
+curl_compatible_beam_field,line_adapted,line-adapted,gaussian,0.25,1e-10,16,0.0625,1377,4.094569482883938e-05,0.00016764536747371044,0.0496900472797177
+curl_compatible_beam_field,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,16,0.0625,1377,2.8515222137713193e-05,0.00011371834442930155,0.03460492591803905
+curl_compatible_beam_field,line_adapted,line-adapted,gaussian,0.25,1e-10,32,0.03125,1377,4.261194085523373e-05,0.0001729523413740424,0.05171213639500269
+curl_compatible_beam_field,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,32,0.03125,1377,2.986001229569194e-05,0.00011923884351472229,0.0362369091292312
+curl_compatible_beam_field,line_adapted,line-adapted,gaussian,0.25,1e-10,64,0.015625,1377,4.294031754223326e-05,0.0001740278949580159,0.05211064112598289
+curl_compatible_beam_field,enriched_line_adapted,enriched line-adapted,gaussian,0.25,1e-10,64,0.015625,1377,3.01863444499655e-05,0.00012049853093043343,0.036632932697582624
