@@ -9,12 +9,13 @@
     "solver_settings": {
         "type": "coupled_solvers.gauss_seidel_strong",
         "echo_level": 1,
-        "num_coupling_iterations": 12,
+        "num_coupling_iterations": 60,
         "convergence_accelerators": [
             {
-                "type": "mvqn",
+                "type": "constant_relaxation",
                 "solver": "fluid",
-                "data_name": "disp"
+                "data_name": "disp",
+                "alpha": 0.03
             }
         ],
         "convergence_criteria": [
@@ -117,6 +118,14 @@
                     }
                 }
             }
-        }
+        },
+        "predictors": [
+            {
+                "type": "linear_derivative_based",
+                "solver": "fluid",
+                "data_name": "disp",
+                "derivative_data_name": "velocity"
+            }
+        ]
     }
 }

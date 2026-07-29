@@ -53,9 +53,9 @@
                     "local_coord_tolerance": 0.25,
                     "kernel_type": "gaussian",
                     "kernel_radius": 0.5,
-                    "polynomial_level": 4,
-                    "rotation_recovery_mode": "small",
-                    "regularization": 1e-8,
+                    "polynomial_level": 0,
+                    "rotation_recovery_mode": "finite",
+                    "regularization": 1e-08,
                     "echo_level": 0
                 }
             }

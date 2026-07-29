@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import argparse
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -15,7 +15,8 @@ SOURCE = (
     / "Bending_Torsion_Beam_Test_Case_2nd"
     / "analytical_finite_rotation_levels_v2.py"
 )
-DEFAULT_OUTPUT = (
+# Canonical result directory. Each run replaces only this exact directory.
+OUTPUT_DIRECTORY = (
     CASE_ROOT
     / "TestCase_Output"
     / "MapperVerification"
@@ -24,11 +25,12 @@ DEFAULT_OUTPUT = (
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
-    args = parser.parse_args()
-    if args.output_dir.exists():
-        raise FileExistsError(f"Refusing to overwrite {args.output_dir}")
+    output_directory = OUTPUT_DIRECTORY.resolve()
+    expected_parent = (CASE_ROOT / "TestCase_Output" / "MapperVerification").resolve()
+    if output_directory.parent != expected_parent:
+        raise RuntimeError(f"Unsafe configured output directory: {output_directory}")
+    if output_directory.exists():
+        shutil.rmtree(output_directory)
     subprocess.run(
         [
             sys.executable,
@@ -36,7 +38,7 @@ def main() -> None:
             "--mapper",
             "plain",
             "--output-dir",
-            str(args.output_dir.resolve()),
+            str(output_directory),
         ],
         check=True,
     )

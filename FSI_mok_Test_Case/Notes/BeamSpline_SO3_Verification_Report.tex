@@ -1,0 +1,551 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=22mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,array}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{iftex}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\ifPDFTeX
+  \errmessage{This report contains CJK text and must be compiled with XeLaTeX}
+\fi
+
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+\IfFontExistsTF{Noto Sans CJK SC}{
+  \setCJKmainfont{Noto Sans CJK SC}
+  \setCJKsansfont{Noto Sans CJK SC}
+}{
+  \IfFontExistsTF{Droid Sans Fallback}{
+    \setCJKmainfont{Droid Sans Fallback}
+    \setCJKsansfont{Droid Sans Fallback}
+    \setCJKmonofont{Droid Sans Fallback}
+  }{
+    \setCJKmainfont{AR PL UMing CN}
+    \setCJKsansfont{AR PL UMing CN}
+    \setCJKmonofont{AR PL UMing CN}
+  }
+}
+
+\title{Beam-Spline Rotational Recovery\\
+\large SO(3) Finite-Rotation Hybrid、解析伴随与验证报告}
+\author{}
+\date{28 July 2026}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\curl}{\nabla\times}
+\newcommand{\relLtwo}{\mathrm{rel\_l2}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+本文审查并验证 Kratos MappingApplication 中
+BeamSplineMapper 与
+BeamSplineMapperWithRecoveryOfRotations。
+核心结论是：Ahrem 等人的 generalized interpolation 是
+small-rotation theory；当前 finite mode 是在其 rotation recovery
+之上加入 $SO(3)$ rigid-section kinematics 的 hybrid extension，
+并非 Ahrem 原文中的 finite theory。当前实现的 Rodrigues forward、
+SO(3) analytical tangent 和 $J^\T f$ load transfer 已得到
+analytical verification。Production 修改严格限制在两个 mapper 的
+四个 \texttt{.h/.cpp} 文件；Kratos core、structural element、
+solver 和 co-rotation mapper 均未修改。
+\end{abstract}
+
+\section{问题定义与四类正确性}
+
+研究问题可表述为：
+\begin{quote}
+能否将 Ahrem rotational recovery 与 $SO(3)$ rigid-section
+kinematics、analytical tangent-transpose load transfer 结合，
+得到 finite-rotation、work-consistent 的 beam-to-surface mapper，
+并明确它与 structural rotation parameterization 的兼容边界？
+\end{quote}
+
+必须区分以下四类结论：
+\begin{enumerate}
+  \item \textbf{Theoretical correctness}：运动学和离散 virtual work
+        是否自洽；
+  \item \textbf{Implementation correctness}：代码是否实现该运动学、
+        tangent、符号及 state lifecycle；
+  \item \textbf{Analytical benchmark correctness}：manufactured fields
+        和离散测试是否达到规定误差；
+  \item \textbf{FSI stability}：耦合系统能否在给定 nonlinear solver
+        和 coupling parameters 下推进。FSI failure 不能自动推翻前三项。
+\end{enumerate}
+
+\section{$SO(3)$ 与 finite rigid-section kinematics}
+
+\subsection{Rotation group 与 exponential coordinates}
+
+三维 proper rotations 构成 special orthogonal group
+\[
+ SO(3)=\{R\in\RR^{3\times3}\mid R^\T R=I,\ \det R=1\}.
+\]
+$R^\T R=I$ 保持长度和夹角，$\det R=1$ 排除 reflection 并保持
+handedness。Rotation vector 写成
+\[
+ \boldsymbol\theta=\phi\boldsymbol n,\qquad
+ \phi=\|\boldsymbol\theta\|_2,\qquad \|\boldsymbol n\|_2=1.
+\]
+其 skew matrix $K=[\boldsymbol\theta]_\times$ 满足
+$K v=\boldsymbol\theta\times v$。Exponential map 与 Rodrigues formula 为
+\[
+ R(\boldsymbol\theta)
+ =\exp(K)
+ =I+\frac{\sin\phi}{\phi}K
+   +\frac{1-\cos\phi}{\phi^2}K^2.
+\]
+当 $\phi\rightarrow0$ 时，
+\[
+ \frac{\sin\phi}{\phi}=1-\frac{\phi^2}{6}+O(\phi^4),\qquad
+ \frac{1-\cos\phi}{\phi^2}=\frac12-\frac{\phi^2}{24}+O(\phi^4),
+\]
+因此 $R=I+K+\frac12K^2+\cdots$；只保留 $I+K$ 才是
+small-rotation approximation。
+
+\subsection{Reference offset}
+
+对 surface point $X_s^0$，先在 reference beam chain 上投影得到
+$X_c^0$，并定义
+\[
+ r_0=X_s^0-X_c^0.
+\]
+Finite rigid-section displacement 是
+\[
+ u_s=u_c+\left(R(\theta_c)-I\right)r_0.
+\]
+$r_0$ 必须来自 reference configuration。若从 current coordinates
+反推 offset，forward operator 会把未知 deformation 再次写入其几何，
+造成 double counting、path dependence，并使 analytical tangent
+不再对应实际 forward map。Mapper 也不得通过重置 current coordinates
+来伪造 reference projection。
+
+\section{Ahrem small theory 与当前 finite hybrid}
+
+Ahrem rotational recovery 构造三维 vector field $s:\RR^3\to\RR^3$：
+\[
+ s(X_i)=u_i,\qquad
+ (\curl s)(X_i)=2\theta_i.
+\]
+Factor 2 来自 infinitesimal kinematics
+\[
+ \theta=\frac12\curl u.
+\]
+其 small-mode surface map 是
+\[
+ u_s=s(X_s^0).
+\]
+这里 rotations 作为 derivative functionals 进入 generalized
+RBF/Hermite interpolation；它并不要求某一截面上所有 points
+严格保持刚性。
+
+当前 finite hybrid 改为在 center projection 上读取 field：
+\[
+ u_c=s(X_c^0),\qquad
+ \theta_c=\frac12(\curl s)(X_c^0),
+\]
+再用
+\[
+ u_s=u_c+\left[\exp([\theta_c]_\times)-I\right]r_0.
+\]
+因此二者区别不是 ``small formula 换成 Rodrigues'' 这么简单：
+\begin{center}
+\begin{tabular}{p{0.27\linewidth}p{0.31\linewidth}p{0.31\linewidth}}
+\toprule
+ & Ahrem small recovery & SO(3) rigid-section hybrid\\
+\midrule
+Evaluation point & 直接计算 $s(X_s^0)$ &
+在 $X_c^0$ 计算 $s,\curl s$\\
+Rotation meaning & infinitesimal curl &
+rotation vector passed to $\exp:\mathfrak{so}(3)\to SO(3)$\\
+Section constraint & 不强制完全刚性 &
+reference cross-section 严格 rigid\\
+Large rigid rotation & 一般不 exact &
+rotation-vector contract 成立时 exact\\
+Literature status & Ahrem 原始理论 &
+当前工作的 finite extension\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Small/finite mode 不能在 Newton 或 coupling iteration 中按角度自动切换。
+两者是不同 forward operators；切换会造成 residual 和 tangent
+不连续，并使 load history/path 依赖于阈值。
+
+\section{Analytical tangent 与 work consistency}
+
+记 interpolation coefficients 为 $c$，离散系统为
+\[
+ Ac=Bq.
+\]
+$A$ 仅由 reference support、kernel 和 polynomial basis 决定。
+$Bq$ 的 displacement rows 使用 $u_i$，curl rows 使用 $2\theta_i$。
+对 destination point，finite forward 可写成
+\[
+ F(q)=E_c c+\bigl(R(\tfrac12C_c c)-I\bigr)r_0 .
+\]
+Right Jacobian 为
+\[
+ J_r(\theta)
+ =I-\frac{1-\cos\phi}{\phi^2}[\theta]_\times
+  +\frac{\phi-\sin\phi}{\phi^3}[\theta]_\times^2.
+\]
+Offset 对 rotation-vector variation 的导数是
+\[
+ \delta(Rr_0)
+ =-R[r_0]_\times J_r(\theta)\,\delta\theta.
+\]
+因此 point tangent operator 为
+\[
+ T_c
+ =E_c+\frac12\left[-R[r_0]_\times J_r(\theta_c)\right]C_c,
+\qquad
+ J=T_cA^{-1}B.
+\]
+
+对 surface load $f_s$，一致的 inverse map 必须满足
+\[
+ Q_b=J(q)^\T f_s,\qquad
+ \delta q^\T Q_b=\delta u_s^\T f_s.
+\]
+实现不显式形成 $A^{-1}$ 或 $J$，而是先聚合
+$T_c^\T f_s$，再求解
+\[
+ A^\T z=\sum_s T_{c,s}^\T f_s,\qquad Q_b=B^\T z.
+\]
+$B^\T$ 把 curl multipliers 映回 nodal moments，因此 rotations 的
+factor 2 必须在此保留。Global sign 只由最后的
+\texttt{SWAP\_SIGN} accumulation 控制。Finite difference 只用于
+verification；若在 production 中逐 DOF perturb，不仅代价过高，
+还会引入 step-size noise 和 coupling nondeterminism。
+
+\section{三个 mapper 的模型边界}
+
+\begin{longtable}{p{0.20\linewidth}p{0.24\linewidth}p{0.25\linewidth}p{0.22\linewidth}}
+\toprule
+ & Plain BeamSpline & Recovery mapper & BeamMapper co-rotation\\
+\midrule
+\endhead
+Centerline model &
+1D global chain spline；rotation 作为 slope/torsion data &
+3D generalized value/curl interpolation &
+moving/local frame 中的 beam interpolation\\
+Surface offset &
+由 interpolated section rotation 旋转 &
+small: $s(X_s)$；finite: $SO(3)$ rigid section &
+分解并组合 rigid-body operators\\
+Large rotation &
+含 finite matrix，但不是一般 objective/geometrically exact &
+finite rigid rotation exact；受 rotation-vector contract 限制 &
+通过 co-rotating frame 处理 large motion\\
+Inverse &
+当前 nonlinear forward tangent 的 transpose &
+small linear adjoint；finite analytical $J^\T$ &
+现有实现使用 section force/moment distribution；未在本工作中修改\\
+\bottomrule
+\end{longtable}
+
+\section{CrBeamElement3D2N compatibility}
+
+\texttt{CrBeamElement3D2N} 的 nodal \texttt{ROTATION} 是 additive
+solution DOF，但 element 内部 orientation 通过 iteration increments
+更新 quaternion。对同一固定轴或 commuting increments，
+\[
+ \exp(\theta_1)\exp(\theta_2)=\exp(\theta_1+\theta_2),
+\]
+所以 nodal total vector 与 accumulated orientation 可兼容。
+一般情况下
+\[
+ \exp([\Delta\theta_2]_\times)\exp([\Delta\theta_1]_\times)
+ \ne
+ \exp([\Delta\theta_1+\Delta\theta_2]_\times).
+\]
+实测 single-axis small increments 的 orientation
+$\relLtwo=6.8041\times10^{-14}$，通过 $10^{-10}$ gate；
+non-commuting sequence 的差异为
+$\relLtwo=7.4178\times10^{-3}$。
+
+因此本实现保持 mapper 的明确 contract：
+\texttt{ROTATION} 被解释为 global total exponential coordinates。
+Mok planar/single-axis motion 属于兼容范围。对 general 3D
+non-commuting CrBeam motion，只报告 limitation，不宣称 exact。
+直接读取 element internal axes 并不能解决 load mapping，因为当前
+四文件范围内无法取得该 orientation 对 nodal DOFs 的 consistent
+derivative；这样做会破坏 $J^\T f$。
+
+\section{Implementation changes}
+
+Production 仅修改以下四个文件：
+\begin{itemize}
+  \item \texttt{beam\_spline\_mapper.h/.cpp};
+  \item
+  \texttt{beam\_spline\_mapper\_with\_recovery\_of\_rotations.h/.cpp}.
+\end{itemize}
+
+完成的 correctness hardening 为：
+\begin{enumerate}
+  \item plain mapper 和 recovery-finite mapper 的
+        \texttt{InverseMap} 通常要求当前 interface 上已有成功
+        \texttt{Map}；唯一例外是 standard
+        \texttt{DISPLACEMENT/ROTATION} 均为零的无歧义初始态，
+        用于兼容 CoSimulation 首次 load transfer；
+  \item interface rebuild/update 会清除 forward state；
+  \item finite cache 只在所有 destination nodes 成功完成 forward 后发布；
+  \item \texttt{polynomial\_level=0} 才允许 auto selection；
+        显式 level 1--4 若 node count/rank/unisolvency 不满足立即报错；
+  \item legacy \texttt{polynomial\_basis} 保持兼容并发出
+        deprecation warning；
+  \item 保持原 reference offset、Rodrigues Taylor branch、right
+        Jacobian、factor 2、transpose solve 和 \texttt{SWAP\_SIGN}。
+\end{enumerate}
+
+\section{Analytical verification results}
+
+统一 vector/matrix error 为
+\[
+ \relLtwo(a,b)
+ =\frac{\|a-b\|_2}{\max(\|b\|_2,\epsilon)}.
+\]
+Virtual work 另外报告 normalized scalar residual。
+
+\subsection{Forward 与 polynomial span}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Test & Maximum $\relLtwo$ & Gate\\
+\midrule
+Finite rigid rotations $1^\circ,30^\circ,90^\circ,170^\circ$
+  & $3.98\times10^{-15}$ & $10^{-10}$\\
+Default small versus explicit small & $0$ & $10^{-12}$\\
+Cubic-kernel rigid exact span, levels 0,2,3,4
+  & $3.36\times10^{-16}$ & $10^{-10}$\\
+Coordinate mutation & $0$ & exact zero\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Full-3D level 1 在 collinear support 上 rank deficient，按 strict
+contract 正确拒绝。Gaussian kernel 的 level-2 rigid test 得到
+$1.0384\times10^{-10}$，略高于 gate；同一 exact-span test 使用
+cubic kernel 为 $1.7000\times10^{-16}$，说明这是 kernel/system
+conditioning 而非 span 缺失。Out-of-span quadratic field 的误差约
+$1.36\times10^{-1}$，只作为 approximation evidence，不标记为
+exact-span failure。
+
+\subsection{Tangent、inverse 与 signs}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Test & Worst result & Gate\\
+\midrule
+Finite analytical directional tangent vs central FD
+  & $\relLtwo=1.5544\times10^{-9}$ & $10^{-7}$\\
+Recovery-small virtual work & $2.2384\times10^{-9}$ & $10^{-8}$\\
+Recovery-finite virtual work & $2.5748\times10^{-9}$ & $10^{-8}$\\
+Plain spline virtual work & $2.3979\times10^{-9}$ & $10^{-8}$\\
+\texttt{SWAP\_SIGN} & $\relLtwo=0$ & $10^{-12}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Surface Cartesian basis loads 被逐一 inverse mapped，用于重构
+$Jp$；因此该 tangent test 同时覆盖 force distribution、
+moment sign、rotation factor 2 和 transpose orientation。
+
+\subsection{Bending、torsion 与 refinement}
+
+使用 prescribed finite rigid-section reference，beam node counts 为
+$6,9,17,33$：
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Case & Observed $\relLtwo$ range & Status\\
+\midrule
+Pure bending & $6.16\times10^{-15}$--$1.32\times10^{-14}$ & PASS\\
+Pure torsion & $2.43\times10^{-16}$--$4.29\times10^{-16}$ & PASS\\
+Combined bending/torsion & $4.37\times10^{-15}$--$8.76\times10^{-15}$ & PASS\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{FSI gate 与 VTK evidence policy}
+
+FSI 不参与上述 analytical acceptance。只有代码、tangent、
+work consistency、CrBeam boundary 和本文档完成后才运行 Mok gate。
+固定参数为
+\[
+ scale=50,\quad\Delta t=0.05,\quad\alpha=0.03,\quad
+ N_{\rm coupling}=60,\quad r_k=0.50,\quad
+ \lambda=10^{-8},\quad polynomial\_level=4.
+\]
+Cases 为 nearest-neighbor baseline、plain、recovery-small 和
+recovery-finite；time gates 为
+$0.5\rightarrow4.5\rightarrow10\rightarrow25$ s。
+
+每次运行必须使用 versioned path，并生成 VTK manifest。Validation
+检查 readable files、monotonic step/time、node count、NaN/Inf 和
+required arrays；CSM 至少包括
+\texttt{DISPLACEMENT}, \texttt{ROTATION}, \texttt{POINT\_LOAD},
+\texttt{POINT\_MOMENT}, \texttt{REACTION},
+\texttt{REACTION\_MOMENT}。监测节点的 VTK displacement 必须与
+runtime history 用 $\relLtwo$ 交叉验证。异常终止时，只信任完整写出
+且不晚于 accepted solution time 的 VTK。
+
+\subsection{Gate results}
+
+所有四种 case 均通过 0.5 s gate，且 VTK integrity、required arrays
+和 input restoration 均通过。4.5 s gate 的结果为：
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Case & Status & Failure time & Last valid time & VTK\\
+\midrule
+Nearest neighbor & PASS & --- & 4.50 & valid\\
+Plain spline & structural nonconvergence & 3.10 & 3.05 & valid\\
+Recovery-small & structural nonconvergence & 4.25 & 4.20 & valid\\
+Recovery-finite & structural nonconvergence & 3.10 & 3.05 & valid\\
+\bottomrule
+\end{tabular}
+\end{center}
+按 gate 规则，三个 spline cases 不进入 10 s。Nearest-neighbor 已有
+充分 baseline evidence，因此不继续重复长时运行。这里的 ``VTK
+valid'' 仅指截至 last accepted time 的完整文件可信，不能把 failed
+step 当作已 flush。
+
+\subsection{Nested convergence conditions}
+
+该计算有两个不能混淆的 convergence gate。Structural solver 因为
+存在 rotation DOFs，实际使用
+\texttt{ResidualDisplacementAndOtherDoFCriteria}：
+\[
+ \left(r_u\le10^{-6}\ \lor\ a_u<10^{-6}\right)
+ \land
+ \left(r_\theta\le10^{-6}\ \lor\ a_\theta<10^{-6}\right),
+\]
+并限制为 150 Newton iterations。Coupling solver 使用 fluid-interface
+displacement residual $\rho=d^{(k)}-d^{(k-1)}$：
+\[
+ a_c=\frac{\|\rho\|_2}{\sqrt{n}},\qquad
+ r_c=\frac{\|\rho\|_2}{\|d^{(k)}\|_2},
+\]
+其中近零 denominator 被替换为 1；$a_c<10^{-6}$ 或
+$r_c<10^{-6}$，且最多 60 coupling iterations。
+
+\subsection{Why the spline FSI run does not converge}
+
+对 plain spline 的 targeted echo run 在 step 62 给出决定性证据。
+上一 time step 的 structural Newton 通常在 3 次 iteration 内把
+residual ratio 从约 $10^{-3}$ 降到 $10^{-8}$。新 step 的第一次
+structural solve 则得到：
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+Newton iteration & displacement ratio & rotation ratio\\
+\midrule
+1 & 55.1414 & 48.5850\\
+2 & 110.237 & 103.471\\
+3 & 142.074 & 104.632\\
+4 & NaN & NaN\\
+\bottomrule
+\end{tabular}
+\end{center}
+因此这不是 tolerance 略微未满足，而是 full Newton step 离开
+local convergence basin。
+
+NaN 的直接机制位于 \texttt{CrBeamElement3D2N} 的 incremental
+quaternion update。其 scalar increment 计算为
+\[
+ \Delta q_0=\sqrt{1-\frac{\|\Delta\phi\|_2^2}{4}},
+\]
+但 element 没有在平方根前检查 $\|\Delta\phi\|_2\le2$。当发散的
+Newton correction 超过该 rotation chart 的有效域时，quaternion、
+internal force 和 residual 被 NaN 污染；增加 150 iterations 或
+放宽 $10^{-6}$ criterion 均不可能恢复。
+受四文件修改边界限制，本次没有在 element 内插桩输出
+$\Delta\phi$；因此 ``大 correction $\rightarrow$ negative square
+root'' 是由 residual sequence 与该唯一显式失效路径得到的
+code-level inference，而不是直接记录的 $\Delta\phi$ measurement。
+
+触发顺序同样重要。每个新 time step 先执行
+\texttt{linear\_derivative\_based} predictor，然后 solve fluid、
+map reaction、solve structure；只有完成整个 coupling iterate 且
+未收敛后，才对下一次 interface displacement update 应用
+$\alpha=0.03$。所以 constant relaxation 无法保护新 step 的第一次
+structural solve。最后一个 accepted VTK state 的 load/moment arrays
+全部 finite，且最大 temporal jumps 出现在更早时刻；这排除了
+``上一完整输出已经发生 load spike''，但 failed-step predictor 后的
+载荷不会被 VTK flush。
+
+结合 analytical $J^T$、basis loads 和 virtual-work tests 均通过，
+该 failure 应分类为
+\textbf{predictor-triggered structural nonlinear divergence at the
+CrBeam incremental-rotation compatibility boundary}，而不是 mapper
+algebra、factor 2 或 moment-sign error。
+
+\subsection{Convergence design}
+
+达到可靠收敛的顺序应为：
+\begin{enumerate}
+  \item 对 predicted interface displacement 使用 bounded predictor
+        或 trust region，而不是无界的 full derivative extrapolation；
+  \item structural solver 返回 false 或首次出现 non-finite value 时，
+        立即 reject 并 rollback 当前 coupling iterate；
+  \item 对 structural Newton rotation correction 做 globalization，
+        保证每个 $\Delta\phi$ 留在 CrBeam quaternion chart 内；
+  \item 只有完成上述 stability safeguards 后，再用 bounded Aitken
+        或 IQN-ILS 恢复 coupling efficiency。
+\end{enumerate}
+第 2--3 项需要 solver/element support，超出当前四个 mapper 文件的
+允许修改范围。因此在现有范围内应诚实报告 compatibility boundary，
+不能用 parameter sweep、放宽 tolerance 或增加 iteration 上限宣称
+解决。
+
+\section{论文组织与待讨论问题}
+
+建议 thesis 主线为：
+\begin{enumerate}
+  \item Ahrem generalized interpolation 与 polynomial/unisolvency；
+  \item $SO(3)$ rigid-section hybrid；
+  \item analytical tangent transpose 与 discrete virtual work；
+  \item manufactured verification、CrBeam compatibility；
+  \item Mok FSI stability evidence 与 failure classification。
+\end{enumerate}
+
+Paper 的潜在 contribution 是 finite hybrid、analytical adjoint 和
+可复现 verification protocol 的组合，而不是 Rodrigues formula
+本身。建议与 professor 明确讨论：
+\begin{itemize}
+  \item general non-commuting CrBeam motion 是否必须纳入 scope；
+  \item 若必须支持，是否允许 element 提供 orientation 及其 consistent
+        tangent，意味着超出当前四文件边界；
+  \item FSI nonlinear structural/coupling convergence 应作为 mapper
+        paper 的 acceptance gate，还是独立 numerical-solver study；
+  \item hybrid 的 rigid-section assumption 是否符合目标 aerodynamic
+        interface 的 physics。
+\end{itemize}
+
+\section{Reproducibility}
+
+主要 machine-readable results 位于
+\path{FSI_mok_Test_Case/TestCase_Output/MapperVerification} 和
+\path{Bending_Torsion_Beam_Test_Case_2nd/TestCase_Output}。
+关键 drivers 为：
+\begin{itemize}
+  \item \texttt{validate\_mapper\_contracts.py};
+  \item \texttt{validate\_recovery\_forward.py};
+  \item \texttt{validate\_recovery\_adjoint.py};
+  \item \texttt{validate\_crbeam\_rotation\_compatibility.py};
+  \item \texttt{validate\_bending\_torsion\_refinement.py}.
+\end{itemize}
+
+\end{document}

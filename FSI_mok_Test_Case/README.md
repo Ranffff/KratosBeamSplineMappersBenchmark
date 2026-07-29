@@ -1,52 +1,85 @@
-# FSI Mok beam-spline mapper validation
+# FSI Mok Beam-Spline Mapper Benchmark
 
-该目录只维护当前两个 beam spline mapper 的理论、analytical verification 和
-Mok FSI stability evidence。官方物理参考案例仍是：
+This directory contains a cleaned, runnable Mok FSI benchmark set for the
+Kratos MappingApplication beam-spline mapper work.  It keeps the simulation
+inputs, maintained analysis scripts, theoretical notes, and lightweight result
+summaries.  Large generated VTK fields, input snapshots, Python caches, LaTeX
+temporary files, and long console logs are intentionally not versioned.
 
-`/root/dev/Kratos/Examples/co_simulation/validation/fsi_mok`
+## Required Kratos Branches
 
-## 核心目录
+Use a Kratos build that contains the current mapper implementations:
 
-- `CoSimulation_Cases/`：NearestNeighbor、BeamMapper_CoRotation、
-  BeamSplineMapper 和 rotational-recovery mapper 的可运行 case。
-- `Scripts/`：唯一维护的运行、验证和诊断脚本。
-- `Notes/Beam_Abstraction_Short_Note.tex`：理论、实现、benchmark 设计和结果分析。
-- `Notes/Beam_Abstraction_Short_Note.pdf`：上述笔记的编译版本。
-- `TestCase_Output/MapperVerification/`：当前 mapper 二进制生成的 analytical
-  forward/adjoint 结果。
-- `TestCase_Output/StabilityTrials_s50/`：当前 post-fix FSI gate 结果。
+- `mapping/beam_splines` for `beam_spline_mapper`
+- `mapping/beam_spline_with_recovery_of_rotations` for
+  `beam_spline_mapper_with_recovery_of_rotations`
 
-## Analytical verification
+The recovery branch contains both mapper types and is the recommended branch
+for running all cases in this folder.
 
-所有 accuracy reference 都是 prescribed analytical field，不以其他 mapper
-作为参考。脚本拒绝覆盖已有输出。
+## Directory Layout
+
+- `CoSimulation_Cases/`
+  - `NearestNeighbor`
+  - `BeamMapper_CoRotation`
+  - `BeamSplineMapper`
+  - `BeamSplineMapper_WithRotationalRecovery`
+- `Scripts/`
+  - analytical forward/adjoint verification
+  - FSI benchmark runner
+  - post-processing and diagnosis scripts
+- `Notes/`
+  - `Beam_Abstraction_Short_Note.tex/.pdf`
+  - `BeamSpline_SO3_Verification_Report.tex/.pdf`
+- `TestCase_Output/`
+  - lightweight retained summaries, CSV files, JSON files, conclusions, and
+    selected point histories
+
+## Running A Case Directly
+
+From a Kratos build tree, export the Python path to the Kratos binaries:
 
 ```bash
-cd /root/dev/Kratos/FSI_mok_Test_Case
-export PYTHONPATH=/root/dev/Kratos/bin/Release
+export PYTHONPATH=/path/to/Kratos/bin/Release
+```
+
+Then run one case:
+
+```bash
+cd FSI_mok_Test_Case/CoSimulation_Cases/BeamSplineMapper_WithRotationalRecovery
+python3 MainKratos.py
+```
+
+The case writes output paths defined in its `ProjectParameters*.json` files.
+For clean benchmark runs, prefer the runner below because it snapshots inputs,
+restores modified files, and writes a compact summary.
+
+## Analytical Verification
+
+Run from the `FSI_mok_Test_Case` directory:
+
+```bash
+export PYTHONPATH=/path/to/Kratos/bin/Release
 
 python3 Scripts/validate_beam_spline_forward.py
 python3 Scripts/validate_beam_spline_adjoint.py
 python3 Scripts/validate_recovery_forward.py
 python3 Scripts/validate_recovery_adjoint.py
+python3 Scripts/validate_mapper_contracts.py
+python3 Scripts/validate_crbeam_rotation_compatibility.py
 ```
 
-Recovery 验证脚本可用 `--mode small`、`--mode finite` 或默认的 `--mode both`。
-Adjoint 测试比较 analytical tangent transpose 与 centered finite-difference
-directional work；finite difference 只用于验证。
+The analytical checks use prescribed fields as references.  They do not use
+another mapper as the accuracy reference.
 
-## FSI benchmark
+## FSI Benchmark Runner
 
-通用 runner 会对输入做快照，保持 structure/load 同步 scaling，监测
-NaN、coupling failure 和 repeated structural nonconvergence，并在退出时校验输入
-恢复。
-
-示例：
+Example finite-recovery gate run:
 
 ```bash
 python3 Scripts/run_fsi_benchmark.py \
   BeamSplineMapper_WithRotationalRecovery \
-  --tag recovery_small_s50_dt005_t045 \
+  --tag gate_4p5_recovery_auto7_finite \
   --end-time 4.5 \
   --dt 0.05 \
   --alpha 0.03 \
@@ -54,19 +87,53 @@ python3 Scripts/run_fsi_benchmark.py \
   --scale 50 \
   --kernel-radius 0.50 \
   --regularization 1e-8 \
-  --polynomial-level 4 \
-  --rotation-recovery-mode small
+  --polynomial-level 0 \
+  --rotation-recovery-mode finite
 ```
 
-FSI 只评价 stability 和 failure mechanism；rel L2 accuracy 由 analytical
-verification 给出。推荐 gate 顺序是 `0.5 → 4.5 → 10 → 25 s`，未通过前一级时
-不进入更长运行。
+Available runner cases are:
 
-## 结果诊断
+- `NearestNeighbor`
+- `BeamMapper_CoRotation`
+- `BeamSplineMapper`
+- `BeamSplineMapper_WithRotationalRecovery`
 
-- `analyze_structural_newton.py`：按 FSI step/coupling iteration 汇总 Newton 历史。
-- `analyze_vtk_history.py`：位移、转角、载荷和 step jump。
-- `check_load_consistency.py`：fluid reaction 与 beam force/moment balance。
-- `analyze_recovery_conditioning.py`：recovery saddle/polynomial conditioning。
+Recommended gate sequence:
 
-当前结论、保留结果的精确路径以及 small/finite 理论区别见主笔记。
+```text
+0.5 s -> 4.5 s -> 10 s -> 25 s
+```
+
+Do not promote a mapper to a longer gate until the shorter gate is understood.
+
+## Retained Results
+
+The repository keeps compact evidence only:
+
+- analytical `summary.txt`, `summary.csv`, `summary.json`, and
+  `parameters.json`
+- FSI `*_summary.json`
+- FSI `conclusion.txt`
+- aggregate `nn_rel_l2_comparison.csv/.json`
+- selected point-history `.dat` files
+
+The repository intentionally excludes:
+
+- `vtk_output_*`
+- `input_snapshot`
+- `benchmark_logs`
+- `console_log.txt`
+- `__pycache__`
+- LaTeX auxiliary files such as `.aux`, `.log`, `.out`, `.fls`, and
+  `.fdb_latexmk`
+
+Re-run the scripts if full VTK fields or detailed logs are needed.
+
+## Current Interpretation
+
+The analytical mapper checks are the main correctness evidence.  The Mok FSI
+results are nonlinear coupled-trajectory evidence and should be interpreted
+together with the diagnostic summaries.  The rotational-recovery finite mode
+is an Ahrem-style rotational recovery plus a rigid-section finite-rotation
+hybrid; it is not a finite-rotation theorem from the original small-rotation
+curl-recovery formulation.

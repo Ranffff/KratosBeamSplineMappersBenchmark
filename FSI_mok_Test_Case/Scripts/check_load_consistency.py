@@ -141,8 +141,11 @@ def main() -> None:
         "max_moment_error_norm": max(row["moment_error_norm"] for row in rows),
         "note": "Legacy VTK output preserves ascending node-ID order for Parts_Fluid; interface node ID maps to zero-based index ID-1.",
     }
-    args.output.with_suffix(".json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(summary, indent=2))
+    args.output.with_suffix(".json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

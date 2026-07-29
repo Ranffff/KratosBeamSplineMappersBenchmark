@@ -1,0 +1,10 @@
+status: failed_returncode_1
+last_valid_time: None
+accuracy_reference: NearestNeighbor point-A DISPLACEMENT_X
+reference_point_file: None
+rel_l2_interval: None...None
+rel_l2_common_steps: None
+rel_l2: None
+vtk_valid: False
+vtk_validation_manifest: /root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/gate_0p5_plain_20260728_v1/BeamSplineMapper/vtk_validation_manifest.json
+restoration_verified: True

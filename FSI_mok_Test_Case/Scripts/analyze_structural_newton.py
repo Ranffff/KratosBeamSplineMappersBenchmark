@@ -129,8 +129,11 @@ def main() -> None:
             key=lambda record: record["newton_iterations_reported"],
         ) if completed else None,
     }
-    args.output.with_suffix(".json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(summary, indent=2))
+    args.output.with_suffix(".json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

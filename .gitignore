@@ -3,3 +3,19 @@ __pycache__/
 *:Zone.Identifier
 .DS_Store
 
+# Generated Kratos/benchmark outputs
+vtk_output_*/
+input_snapshot/
+benchmark_logs/
+console_log.txt
+*.post.lst
+*.time
+
+# LaTeX build products
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz

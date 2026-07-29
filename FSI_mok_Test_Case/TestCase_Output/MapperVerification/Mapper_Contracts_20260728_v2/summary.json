@@ -1,0 +1,68 @@
+{
+  "status": "PASS",
+  "error_metric": "rel_l2",
+  "results": [
+    {
+      "name": "explicit_level_4_is_strict",
+      "status": "PASS",
+      "message": "Error: Explicit polynomial_level=4 requires at least 5 beam support nodes, got 2. Use polynomial_level=0 to permit automatic level selection."
+    },
+    {
+      "name": "level_0_auto_short_chain",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy_polynomial_basis",
+      "status": "PASS"
+    },
+    {
+      "name": "default_mode_is_small",
+      "status": "PASS",
+      "rel_l2": 0.0
+    },
+    {
+      "name": "beam_spline_mapper_zero_initial_inverse",
+      "status": "PASS"
+    },
+    {
+      "name": "beam_spline_mapper_inverse_before_map",
+      "status": "PASS",
+      "message": "Error: BeamSplineMapper::InverseMap requires a successful preceding Map call on the current interface unless standard DISPLACEMENT and ROTATION are both zero. Only that unambiguous initial state may use the zero section-rotation tangent before the first forward transfer."
+    },
+    {
+      "name": "beam_spline_mapper_update_invalidates_state",
+      "status": "PASS",
+      "message": "Error: BeamSplineMapper::InverseMap requires a successful preceding Map call on the current interface unless standard DISPLACEMENT and ROTATION are both zero. Only that unambiguous initial state may use the zero section-rotation tangent before the first forward transfer."
+    },
+    {
+      "name": "beam_spline_mapper_coordinate_immutability",
+      "status": "PASS"
+    },
+    {
+      "name": "beam_spline_mapper_with_recovery_of_rotations_zero_initial_inverse",
+      "status": "PASS"
+    },
+    {
+      "name": "beam_spline_mapper_with_recovery_of_rotations_inverse_before_map",
+      "status": "PASS",
+      "message": "Error: Finite BeamSplineMapperWithRecoveryOfRotations::InverseMap requires a successful preceding Map call on the current interface unless standard DISPLACEMENT and ROTATION are both zero. Only that unambiguous initial state may build the SO(3) tangent before the first forward transfer."
+    },
+    {
+      "name": "beam_spline_mapper_with_recovery_of_rotations_update_invalidates_state",
+      "status": "PASS",
+      "message": "Error: Finite BeamSplineMapperWithRecoveryOfRotations::InverseMap requires a successful preceding Map call on the current interface unless standard DISPLACEMENT and ROTATION are both zero. Only that unambiguous initial state may build the SO(3) tangent before the first forward transfer."
+    },
+    {
+      "name": "beam_spline_mapper_with_recovery_of_rotations_coordinate_immutability",
+      "status": "PASS"
+    },
+    {
+      "name": "finite_analytical_directional_tangent",
+      "status": "PASS",
+      "epsilon": 1e-06,
+      "rel_l2": 1.5543921898331493e-09,
+      "tolerance": 1e-07,
+      "swap_sign_rel_l2": 0.0
+    }
+  ]
+}

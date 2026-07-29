@@ -1,6 +1,8 @@
 status: stopped_repeated_nonconvergence_step_62
 last_valid_time: 3.05
-rel_l2_interval: None...None
-rel_l2_common_steps: None
-rel_l2: None
+accuracy_reference: NearestNeighbor point-A DISPLACEMENT_X
+reference_point_file: /root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/nearest_neighbor_s50_dt005_a003_i60_t045_20260724/NearestNeighbor/point_A_thickness50_scaled_load.dat
+rel_l2_interval: 0.05...3.05
+rel_l2_common_steps: 61
+rel_l2: 0.010242127035093203
 restoration_verified: True

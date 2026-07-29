@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import shutil
 import sys
 from pathlib import Path
 
@@ -17,7 +18,12 @@ SOURCE = (
     / "Bending_Torsion_Beam_Test_Case_2nd"
     / "analytical_finite_tangent_work_v2.py"
 )
-DEFAULT_OUTPUT = CASE_ROOT / "TestCase_Output" / "MapperVerification"
+# Canonical result directories. Each selected mode replaces only its own directory.
+OUTPUT_ROOT = CASE_ROOT / "TestCase_Output" / "MapperVerification"
+OUTPUT_DIRECTORIES = {
+    "small": OUTPUT_ROOT / "Recovery_Small_Adjoint",
+    "finite": OUTPUT_ROOT / "Recovery_Finite_Adjoint",
+}
 
 
 def create_recovery_mapper(origin, destination, mode: str):
@@ -30,7 +36,7 @@ def create_recovery_mapper(origin, destination, mode: str):
         "local_coord_tolerance" : 0.25,
         "kernel_type" : "gaussian",
         "kernel_radius" : 0.50,
-        "polynomial_level" : 4,
+        "polynomial_level" : 0,
         "rotation_recovery_mode" : "{mode}",
         "regularization" : 1.0e-8,
         "echo_level" : 0
@@ -38,10 +44,12 @@ def create_recovery_mapper(origin, destination, mode: str):
     return KM.MapperFactory.CreateMapper(origin, destination, settings)
 
 
-def run_mode(mode: str, output_root: Path, mesh_preset: str, case_limit: int | None) -> None:
-    output_dir = output_root / f"Recovery_{mode.capitalize()}_Adjoint"
+def run_mode(mode: str, mesh_preset: str, case_limit: int | None) -> None:
+    output_dir = OUTPUT_DIRECTORIES[mode].resolve()
+    if output_dir.parent != OUTPUT_ROOT.resolve():
+        raise RuntimeError(f"Unsafe configured output directory: {output_dir}")
     if output_dir.exists():
-        raise FileExistsError(f"Refusing to overwrite {output_dir}")
+        shutil.rmtree(output_dir)
     spec = importlib.util.spec_from_file_location(f"recovery_{mode}_tangent_work", SOURCE)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Cannot import {SOURCE}")
@@ -66,13 +74,12 @@ def run_mode(mode: str, output_root: Path, mesh_preset: str, case_limit: int | N
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("small", "finite", "both"), default="both")
-    parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--mesh-preset", choices=("small", "medium", "large"), default="small")
     parser.add_argument("--case-limit", type=int)
     args = parser.parse_args()
     modes = ("small", "finite") if args.mode == "both" else (args.mode,)
     for mode in modes:
-        run_mode(mode, args.output_root.resolve(), args.mesh_preset, args.case_limit)
+        run_mode(mode, args.mesh_preset, args.case_limit)
 
 
 if __name__ == "__main__":

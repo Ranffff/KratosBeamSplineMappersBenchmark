@@ -22,7 +22,7 @@
             "materials_filename": "StructuralMaterials.json"
         },
         "time_stepping": {
-            "time_step": 0.05
+            "time_step": 0.025
         },
         "convergence_criterion": "residual_criterion",
         "displacement_relative_tolerance": 1e-06,
@@ -141,7 +141,7 @@
                     ],
                     "model_part_name": "Structure",
                     "output_file_settings": {
-                        "output_path": "../../TestCase_Output/FormalBenchmark_s50_t10/BeamSplineMapper_WithRotationalRecovery",
+                        "output_path": "../../TestCase_Output/StabilityTrials_s50/gate_10_recovery_auto7_finite_dt0p025_20260729_v1/BeamSplineMapper_WithRotationalRecovery",
                         "file_name": "point_A_beam_spline_recovery_t50_scaled_load"
                     },
                     "output_variables": [
@@ -164,9 +164,9 @@
                     "output_control_type": "step",
                     "output_interval": 1,
                     "file_format": "ascii",
-                    "output_precision": 7,
+                    "output_precision": 15,
                     "output_sub_model_parts": false,
-                    "output_path": "../../TestCase_Output/FormalBenchmark_s50_t10/BeamSplineMapper_WithRotationalRecovery/vtk_output_mok_fsi_csd",
+                    "output_path": "../../TestCase_Output/StabilityTrials_s50/gate_10_recovery_auto7_finite_dt0p025_20260729_v1/BeamSplineMapper_WithRotationalRecovery/vtk_output_mok_fsi_csd",
                     "save_output_files_in_folder": true,
                     "nodal_solution_step_data_variables": [
                         "DISPLACEMENT",

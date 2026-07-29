@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -15,19 +16,25 @@ SOURCE = (
     / "Bending_Torsion_Beam_Test_Case_2nd"
     / "analytical_finite_rotation_levels_v2.py"
 )
-DEFAULT_OUTPUT = CASE_ROOT / "TestCase_Output" / "MapperVerification"
+# Canonical result directories. Each selected mode replaces only its own directory.
+OUTPUT_ROOT = CASE_ROOT / "TestCase_Output" / "MapperVerification"
+OUTPUT_DIRECTORIES = {
+    "small": OUTPUT_ROOT / "Recovery_Small_Forward",
+    "finite": OUTPUT_ROOT / "Recovery_Finite_Forward",
+}
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("small", "finite", "both"), default="both")
-    parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
     modes = ("small", "finite") if args.mode == "both" else (args.mode,)
     for mode in modes:
-        output_dir = args.output_root.resolve() / f"Recovery_{mode.capitalize()}_Forward"
+        output_dir = OUTPUT_DIRECTORIES[mode].resolve()
+        if output_dir.parent != OUTPUT_ROOT.resolve():
+            raise RuntimeError(f"Unsafe configured output directory: {output_dir}")
         if output_dir.exists():
-            raise FileExistsError(f"Refusing to overwrite {output_dir}")
+            shutil.rmtree(output_dir)
         subprocess.run(
             [
                 sys.executable,

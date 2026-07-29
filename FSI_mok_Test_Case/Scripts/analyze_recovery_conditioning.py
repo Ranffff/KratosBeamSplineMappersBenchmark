@@ -205,8 +205,11 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     if args.output.exists():
         raise FileExistsError(f"Refusing to overwrite existing diagnostic: {args.output}")
-    args.output.write_text(json.dumps(results, indent=2), encoding="utf-8")
-    print(json.dumps(results, indent=2))
+    args.output.write_text(
+        json.dumps(results, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps(results, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

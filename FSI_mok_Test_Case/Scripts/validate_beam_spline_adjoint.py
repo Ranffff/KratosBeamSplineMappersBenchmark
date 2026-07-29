@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import shutil
 import sys
 from pathlib import Path
 
@@ -16,24 +17,33 @@ SOURCE = (
     / "Bending_Torsion_Beam_Test_Case_2nd"
     / "analytical_plain_tangent_work_v2.py"
 )
-DEFAULT_OUTPUT = CASE_ROOT / "TestCase_Output" / "MapperVerification" / "BeamSplineMapper_Adjoint"
+# Canonical result directory. Each run replaces only this exact directory.
+OUTPUT_DIRECTORY = (
+    CASE_ROOT
+    / "TestCase_Output"
+    / "MapperVerification"
+    / "BeamSplineMapper_Adjoint"
+)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--mesh-preset", choices=("small", "medium", "large"), default="small")
     parser.add_argument("--case-limit", type=int)
     args = parser.parse_args()
-    if args.output_dir.exists():
-        raise FileExistsError(f"Refusing to overwrite {args.output_dir}")
+    output_directory = OUTPUT_DIRECTORY.resolve()
+    expected_parent = (CASE_ROOT / "TestCase_Output" / "MapperVerification").resolve()
+    if output_directory.parent != expected_parent:
+        raise RuntimeError(f"Unsafe configured output directory: {output_directory}")
+    if output_directory.exists():
+        shutil.rmtree(output_directory)
 
     spec = importlib.util.spec_from_file_location("plain_tangent_work", SOURCE)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Cannot import {SOURCE}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    module.OUTPUT_ROOT = args.output_dir.resolve()
+    module.OUTPUT_ROOT = output_directory
 
     forwarded = [str(SOURCE), "--mesh-preset", args.mesh_preset]
     if args.case_limit is not None:

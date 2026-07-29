@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "error_metric": "rel_l2",
+  "mapper_policy": "Use nodal ROTATION as total exponential coordinates; accept single-axis/commuting compatibility and report general non-commuting CrBeam motion as a formulation boundary.",
+  "results": [
+    {
+      "case": "single_axis_commuting",
+      "status": "PASS",
+      "rel_l2": 6.804143447960008e-14,
+      "tolerance": 1e-10
+    },
+    {
+      "case": "noncommuting_increment_diagnostic",
+      "status": "DIAGNOSTIC",
+      "rel_l2": 0.007417829599366488,
+      "acceptance_gate": null,
+      "interpretation": "CrBeam internally composes incremental quaternions; exp(total nodal ROTATION) is not the same orientation for non-commuting increments."
+    }
+  ]
+}

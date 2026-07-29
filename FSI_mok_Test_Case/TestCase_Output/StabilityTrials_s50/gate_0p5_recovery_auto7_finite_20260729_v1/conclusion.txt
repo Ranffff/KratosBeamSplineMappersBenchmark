@@ -1,0 +1,10 @@
+status: completed
+last_valid_time: 0.5
+accuracy_reference: NearestNeighbor point-A DISPLACEMENT_X
+reference_point_file: /root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/nearest_neighbor_s50_dt005_a003_i60_t045_20260724/NearestNeighbor/point_A_thickness50_scaled_load.dat
+rel_l2_interval: 0.05...0.5
+rel_l2_common_steps: 10
+rel_l2: 0.056603410038606444
+vtk_valid: True
+vtk_validation_manifest: /root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/gate_0p5_recovery_auto7_finite_20260729_v1/BeamSplineMapper_WithRotationalRecovery/vtk_validation_manifest.json
+restoration_verified: True

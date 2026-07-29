@@ -1,0 +1,63 @@
+{
+    "reference": "NearestNeighbor point-A DISPLACEMENT_X",
+    "reference_point_file": "/root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/nearest_neighbor_s50_dt005_a003_i60_t045_20260724/NearestNeighbor/point_A_thickness50_scaled_load.dat",
+    "definition": "sqrt(sum_common_valid((u_mapper-u_NN)^2)/sum_common_valid(u_NN^2)); no interpolation",
+    "comparisons": [
+        {
+            "summary_path": "/root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/beamspline_normalized_s50_dt005_a003_i60_t045_20260722/BeamSplineMapper_summary.json",
+            "case": "BeamSplineMapper",
+            "tag": "beamspline_normalized_s50_dt005_a003_i60_t045_20260722",
+            "rotation_recovery_mode": null,
+            "common_steps": 61,
+            "start_time": 0.05,
+            "end_time": 3.05,
+            "rel_l2": 0.010315193604261615,
+            "shared_common_steps": 61,
+            "shared_start_time": 0.05,
+            "shared_end_time": 3.05,
+            "shared_rel_l2": 0.010315193604261615
+        },
+        {
+            "summary_path": "/root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/nearest_neighbor_s50_dt005_a003_i60_t045_20260724/NearestNeighbor_summary.json",
+            "case": "NearestNeighbor",
+            "tag": "nearest_neighbor_s50_dt005_a003_i60_t045_20260724",
+            "rotation_recovery_mode": null,
+            "common_steps": 90,
+            "start_time": 0.05,
+            "end_time": 4.5,
+            "rel_l2": 0.0,
+            "shared_common_steps": 61,
+            "shared_start_time": 0.05,
+            "shared_end_time": 3.05,
+            "shared_rel_l2": 0.0
+        },
+        {
+            "summary_path": "/root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/recovery_level4_finite_s50_dt005_a003_i60_kr050_reg1e8_t045_20260722/BeamSplineMapper_WithRotationalRecovery_summary.json",
+            "case": "BeamSplineMapper_WithRotationalRecovery",
+            "tag": "recovery_level4_finite_s50_dt005_a003_i60_kr050_reg1e8_t045_20260722",
+            "rotation_recovery_mode": "finite",
+            "common_steps": 61,
+            "start_time": 0.05,
+            "end_time": 3.05,
+            "rel_l2": 0.010242127035093203,
+            "shared_common_steps": 61,
+            "shared_start_time": 0.05,
+            "shared_end_time": 3.05,
+            "shared_rel_l2": 0.010242127035093203
+        },
+        {
+            "summary_path": "/root/dev/Kratos/FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/recovery_level4_small_s50_dt005_a003_i60_kr050_reg1e8_t045_20260722/BeamSplineMapper_WithRotationalRecovery_summary.json",
+            "case": "BeamSplineMapper_WithRotationalRecovery",
+            "tag": "recovery_level4_small_s50_dt005_a003_i60_kr050_reg1e8_t045_20260722",
+            "rotation_recovery_mode": "small",
+            "common_steps": 84,
+            "start_time": 0.05,
+            "end_time": 4.2,
+            "rel_l2": 0.03894541261148937,
+            "shared_common_steps": 61,
+            "shared_start_time": 0.05,
+            "shared_end_time": 3.05,
+            "shared_rel_l2": 0.017554808810109204
+        }
+    ]
+}

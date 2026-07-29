@@ -45,7 +45,7 @@
             "no_skin_parts": [],
             "time_stepping": {
                 "automatic_time_step": false,
-                "time_step": 0.1
+                "time_step": 0.05
             }
         }
     },
@@ -209,16 +209,17 @@
                     "model_part_name": "FluidModelPart.Parts_Fluid",
                     "output_control_type": "step",
                     "output_interval": 1,
-                    "file_format": "binary",
-                    "output_precision": 7,
+                    "file_format": "ascii",
+                    "output_precision": 15,
                     "output_sub_model_parts": false,
-                    "output_path": "../../TestCase_Output/FormalBenchmark_s50_t10/NearestNeighbor/vtk_output_mok_fsi_cfd",
+                    "output_path": "../../TestCase_Output/StabilityTrials_s50/gate_10_nn_20260728_v1/NearestNeighbor/vtk_output_mok_fsi_cfd",
                     "save_output_files_in_folder": true,
                     "nodal_solution_step_data_variables": [
                         "VELOCITY",
                         "PRESSURE",
                         "MESH_DISPLACEMENT",
-                        "MESH_VELOCITY"
+                        "MESH_VELOCITY",
+                        "REACTION"
                     ]
                 }
             }

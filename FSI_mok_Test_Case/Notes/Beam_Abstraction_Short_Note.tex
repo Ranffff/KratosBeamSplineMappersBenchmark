@@ -106,7 +106,7 @@ All pass the \(10^{-7}\) tangent/adjoint acceptance criterion.
 
 \section{BeamSplineMapper with rotational recovery}
 
-\subsection{Paper-faithful small-rotation field}
+\subsection{Small-rotation field}
 
 Ahrem, Beckert, and Wendland reconstruct one vector displacement field
 \(s:\RR^3\rightarrow\RR^3\).  At structural sites \(X_i\), the generalized
@@ -189,44 +189,328 @@ block.  The production recovery setting is
 
 The selectable \texttt{rotation\_recovery\_mode = finite} is deliberately
 labelled an Ahrem--rigid-section hybrid, not a finite-rotation theorem from
-the Ahrem paper.  Let \(X_c\) be the reference projection on the beam and
-\(r_0=X_s-X_c\).  The Ahrem solve provides
+the Ahrem paper.  The Ahrem interpolation supplies a smooth displacement
+field \(s:\RR^3\to\RR^3\) and an infinitesimal rotation field
 \[
-  u_c=s(X_c),\qquad
-  \theta_c=\frac12\curl s(X_c).
+  \theta(X)=\frac12\curl s(X).
 \]
-The surface displacement is then
+The hybrid assumption is added afterwards: at an aerodynamic surface point
+\(X_s\), the cross-section through the projected beam-center point \(X_c\)
+moves as a rigid section whose finite orientation is described by the
+rotation vector \(\theta_c=\theta(X_c)\).  Thus
 \[
-  u_s=u_c+
-  \left[\exp([\theta_c]_\times)-I\right]r_0.
+  r_0 = X_s-X_c,
+  \qquad
+  u_c=s(X_c),
 \]
-The reference offset is never formed from current node coordinates.
-Rodrigues' formula and small-angle series are used for the exponential map.
-No rotation-vector recovery from \(R\) is performed, avoiding an additional
-\(\pi\)-branch operation.
+and the mapped surface displacement is
+\begin{equation}
+  u_s
+  =
+  u_c+\left[\exp([\theta_c]_\times)-I\right]r_0 .
+  \label{eq:finite_hybrid_forward}
+\end{equation}
+Here \([a]_\times b=a\times b\).  The offset \(r_0\) is a reference offset; it
+is never formed from current node coordinates.  No logarithm of a rotation
+matrix is used.  This avoids the additional branch ambiguity of recovering a
+rotation vector from \(SO(3)\), especially near an angle of \(\pi\).
 
-This model enforces a rigid section and exactly reproduces finite rigid
-section rotations.  It is not the same physical model as direct evaluation of
-the three-dimensional Ahrem displacement field: the latter can represent a
-general field and does not impose a rigid cross-section.
+\paragraph{Model status.}
+The small-recovery mode evaluates the Ahrem field directly at the surface
+node, \(u_s=s(X_s)\).  The finite hybrid instead evaluates the recovered field
+at the beam-center projection \(X_c\), converts the recovered local curl into
+a finite section rotation, and applies that finite section motion to the
+offset \(r_0\).  Therefore the two modes are different physical models:
+small mode is a general three-dimensional displacement reconstruction,
+whereas finite mode imposes a rigid cross-section.  Finite mode can exactly
+reproduce a rigid section rotation when the recovered \(\theta_c\) is the
+correct rotation vector, but this finite interpretation is an additional beam
+kinematic assumption and not a consequence of the original small-rotation
+curl identity.
 
-The finite map is nonlinear.  Its conservative inverse is the
-current-state tangent transpose,
+\subsubsection{Forward calculation workflow}
+
+For one mapping call, the following data are available:
 \[
-  Q_b=J(q_b)^\T f_s,\qquad
-  J=\frac{\partial u_s}{\partial q_b}.
+  \{X_i,u_i,\theta_i\}_{i=1}^{N_b}
+  \quad\hbox{on the beam support,}
+  \qquad
+  X_s
+  \quad\hbox{on the surface.}
 \]
-For \(\theta=\phi n\), the offset tangent uses the analytical SO(3) right
-Jacobian
+The vectors \(u_i\) and \(\theta_i\) are read from the origin beam
+\texttt{DISPLACEMENT} and \texttt{ROTATION} variables.  The finite hybrid is
+computed as follows.
+
+\begin{enumerate}
+\item Project \(X_s\) onto the reference beam chain and obtain the projected
+      center point \(X_c\).  If \(X_s\) projects onto the segment
+      \((i,i+1)\) with line coordinate \(\xi\in[0,1]\), then
+      \[
+        X_c=(1-\xi)X_i+\xi X_{i+1},
+        \qquad
+        r_0=X_s-X_c .
+      \]
+\item Assemble the rotational-recovery Hermite interpolation system on the
+      support nodes.  For each beam node there are six scalar functionals:
+      three value functionals \(L_{i,a}^{u}\) and three curl functionals
+      \(L_{i,a}^{\omega}\),
+      \[
+        L_{i,a}^{u}(s)=e_a^\T s(X_i),
+        \qquad
+        L_{i,a}^{\omega}(s)=e_a^\T\curl s(X_i),
+        \qquad a\in\{x,y,z\}.
+      \]
+      The right-hand side is
+      \[
+        b =
+        \left[
+          u_1,\ldots,u_{N_b},
+          2\theta_1,\ldots,2\theta_{N_b}
+        \right]^\T ,
+      \]
+      where the factor \(2\) comes from
+      \(\curl s=2\theta\).
+\item Solve the saddle system
+      \begin{equation}
+      \begin{bmatrix}
+        A & P\\
+        P^\T & 0
+      \end{bmatrix}
+      \begin{bmatrix}
+        a\\ c
+      \end{bmatrix}
+      =
+      \begin{bmatrix}
+        b\\ 0
+      \end{bmatrix}.
+      \label{eq:finite_hybrid_saddle_system}
+      \end{equation}
+      The matrix \(A\) is built by applying all value and curl functionals to
+      the vector-valued kernel; \(P\) contains the selected vector polynomial
+      modes.  Regularization, when used, is added only to the kernel block
+      \(A\), never to the zero constraint block.
+\item Evaluate the recovered center displacement and recovered center
+      rotation at \(X_c\):
+      \[
+        u_c=s(X_c),
+        \qquad
+        \theta_c=\frac12\curl s(X_c).
+      \]
+      In matrix form this is
+      \[
+        u_c=E_u(X_c)
+        \begin{bmatrix}a\\c\end{bmatrix},
+        \qquad
+        \theta_c=\frac12 E_\omega(X_c)
+        \begin{bmatrix}a\\c\end{bmatrix},
+      \]
+      where \(E_u\) evaluates the value of the interpolant and
+      \(E_\omega\) evaluates its curl.
+\item Convert the rotation vector \(\theta_c\) to a rotation matrix.  Let
+      \[
+        \varphi=\|\theta_c\|,
+        \qquad
+        K=[\theta_c]_\times .
+      \]
+      Rodrigues' formula gives
+      \begin{equation}
+        R(\theta_c)
+        =
+        I
+        +\frac{\sin\varphi}{\varphi}K
+        +\frac{1-\cos\varphi}{\varphi^2}K^2 .
+        \label{eq:finite_hybrid_rodrigues}
+      \end{equation}
+      For \(\varphi\approx0\), the code uses the corresponding Taylor
+      limits, \(R\approx I+K+\frac12K^2\).
+\item Apply the rigid-section offset and write the surface displacement:
+      \[
+        u_s=u_c+\left(R(\theta_c)-I\right)r_0 .
+      \]
+\end{enumerate}
+
+This workflow is local to one destination node after the global recovery
+coefficients are known.  In practice the recovery coefficients are cached per
+beam chain/support and reused for all destination nodes that belong to that
+support.
+
+\subsubsection{Conservative inverse workflow}
+
+The finite map is nonlinear because \(R(\theta_c)\) contains trigonometric
+functions of the recovered rotation vector.  Its conservative inverse is
+therefore the current-state tangent transpose:
+\begin{equation}
+  Q_b=J(q_b)^\T f_s,
+  \qquad
+  J(q_b)=\frac{\partial u_s}{\partial q_b}.
+  \label{eq:finite_hybrid_tangent_transpose}
+\end{equation}
+Here \(q_b\) collects the beam nodal translations and rotations, and
+\(Q_b\) contains the corresponding work-conjugate beam forces and moments.
+The defining condition is discrete virtual work,
 \[
- J_r(\theta)=I-\frac{1-\cos\phi}{\phi^2}[\theta]_\times
- +\frac{\phi-\sin\phi}{\phi^3}[\theta]_\times^2.
+  f_s^\T\delta u_s = Q_b^\T\delta q_b .
 \]
-The resulting nodal moment is work-conjugate to the selected rotation-vector
-parameter.  At finite rotation it is not generally identical to a naive
-unmodified lever-arm moment.  The state used by the inverse is cached during
-the corresponding forward map; inverse-before-forward has an explicit
-\texttt{DISPLACEMENT}/\texttt{ROTATION} fallback and warning.
+
+For one surface force \(f_s\), variation of
+\eqref{eq:finite_hybrid_forward} gives
+\begin{equation}
+  \delta u_s
+  =
+  \delta u_c
+  +
+  \delta R(\theta_c) r_0 .
+  \label{eq:finite_hybrid_variation}
+\end{equation}
+The first term is transferred by the transpose of the value-evaluation
+operator \(E_u(X_c)\).  The second term is transferred through the rotation
+evaluation operator \(E_\omega(X_c)\) and the derivative of the exponential
+map.
+
+For a rotation vector \(\theta\), an increment \(\delta\theta\) changes the
+rotated offset according to
+\begin{equation}
+  \delta\left(R(\theta)r_0\right)
+  =
+  -R(\theta)[r_0]_\times J_r(\theta)\,\delta\theta ,
+  \label{eq:finite_hybrid_offset_tangent}
+\end{equation}
+where \(J_r\) is the right Jacobian of \(SO(3)\),
+\begin{equation}
+ J_r(\theta)=I-\frac{1-\cos\varphi}{\varphi^2}[\theta]_\times
+ +\frac{\varphi-\sin\varphi}{\varphi^3}[\theta]_\times^2,
+ \qquad
+ \varphi=\|\theta\|.
+ \label{eq:finite_hybrid_right_jacobian}
+\end{equation}
+Using \(a^\T(B\,\delta\theta)=(B^\T a)^\T\delta\theta\), the generalized
+force conjugate to the recovered rotation vector is
+\begin{equation}
+  g_\theta
+  =
+  \left[-R(\theta_c)[r_0]_\times J_r(\theta_c)\right]^\T f_s
+  =
+  J_r(\theta_c)^\T [r_0]_\times R(\theta_c)^\T f_s .
+  \label{eq:finite_hybrid_rotation_generalized_force}
+\end{equation}
+At zero rotation, \(J_r=I\) and \(R=I\), so
+\[
+  g_\theta=[r_0]_\times f_s=r_0\times f_s,
+\]
+which is the usual lever-arm moment.  At finite rotation, \(g_\theta\) is not
+generally equal to this naive moment.  It is the component that is
+work-conjugate to the selected rotation-vector parameterization.
+
+The adjoint accumulation for the recovery coefficients can be written
+compactly as
+\[
+  \delta W
+  =
+  f_s^\T E_u(X_c)\delta z
+  +
+  g_\theta^\T
+  \left[\frac12 E_\omega(X_c)\delta z\right],
+  \qquad
+  z=\begin{bmatrix}a\\c\end{bmatrix}.
+\]
+Therefore the adjoint right-hand side at the interpolation-coefficient level
+is
+\begin{equation}
+  r_z
+  =
+  E_u(X_c)^\T f_s
+  +
+  \frac12 E_\omega(X_c)^\T g_\theta .
+  \label{eq:finite_hybrid_coefficient_adjoint_rhs}
+\end{equation}
+Solving the transpose of the saddle system,
+\[
+      \begin{bmatrix}
+        A & P\\
+        P^\T & 0
+      \end{bmatrix}^{\T}
+      y
+      =
+      r_z ,
+\]
+propagates this destination force back to the original value and curl
+functionals.  The entries associated with value data become nodal force
+contributions; the entries associated with curl data are multiplied by the
+same factor \(2\) convention in the forward right-hand side and become
+work-conjugate nodal moment contributions.  This is the algebraic reason why
+the inverse map must be treated as the exact transpose of the current forward
+tangent, rather than as an independent lever-arm distribution.
+
+\subsubsection{Minimal hand calculation}
+
+The following single-section example is sufficient to check the finite
+rigid-section part by hand after \(u_c\) and \(\theta_c\) have been recovered.
+Assume the beam center projection is
+\[
+  X_c=(0,0,0),\qquad
+  X_s=(0,1,0),
+  \qquad
+  r_0=(0,1,0).
+\]
+Suppose the recovery solve gives
+\[
+  u_c=(0.10,0,0),
+  \qquad
+  \theta_c=(0,0,\alpha),
+  \qquad
+  \alpha=\frac{\pi}{2}.
+\]
+Then
+\[
+  R(\theta_c)=
+  \begin{bmatrix}
+    0&-1&0\\
+    1& 0&0\\
+    0& 0&1
+  \end{bmatrix},
+  \qquad
+  R(\theta_c)r_0=(-1,0,0).
+\]
+The finite rigid-section displacement is
+\[
+  u_s
+  =
+  (0.10,0,0)
+  +
+  \left[(-1,0,0)-(0,1,0)\right]
+  =
+  (-0.90,-1.00,0).
+\]
+The corresponding small-rotation approximation would instead use
+\(\theta_c\times r_0=(-\pi/2,0,0)\), giving
+\[
+  u_s^{small}
+  =
+  (0.10,0,0)+(-1.5708,0,0)
+  =
+  (-1.4708,0,0).
+\]
+This hand calculation shows the modelling difference: finite mode rotates
+the reference offset as a rigid vector, whereas the small formula keeps only
+the first-order term.
+
+For the inverse of the same hand case, take a surface force
+\[
+  f_s=(0,1,0).
+\]
+At \(\alpha=\pi/2\), \(R^\T f_s=(1,0,0)\) and
+\([r_0]_\times R^\T f_s=(0,0,-1)\).  Since the rotation is purely about
+\(z\), the \(z\)-component of \(J_r^\T\) is unchanged, and
+\[
+  g_{\theta_z}=-1.
+\]
+Thus a positive \(y\)-force at the rotated point performs negative virtual
+work against a positive additional \(z\)-rotation in this configuration.
+Together with the direct translational contribution \(f_s\), this is the
+quantity that must be propagated back through the transpose recovery system.
+The sign follows from differentiating the finite rotated offset, not from an
+ad-hoc moment rule.
 
 \section{Common geometric and algebraic corrections}
 
@@ -336,10 +620,20 @@ polynomial level, structural strategy, and target end time.  Each trial:
 \end{enumerate}
 
 The stability gate is \(0.5\rightarrow4.5\rightarrow10\rightarrow25\) s.
-Failure of one gate prevents an unsupported longer run.  FSI trials do not use
-NearestNeighbor as an accuracy reference; the analytical suite supplies
-accuracy, while FSI supplies nonlinear stability and failure-mechanism
-evidence.
+Failure of one gate prevents an unsupported longer run.  The analytical suite
+remains the correctness reference.  In addition, the FSI runner uses a fixed,
+physically scaled NearestNeighbor point-A \(u_x\) history as a trajectory
+reference:
+\[
+ e_{\mathrm{NN}} =
+ \sqrt{\frac{\sum_{t\in{\cal T}_{\mathrm{valid}}}
+ (u_{\mathrm{mapper}}(t)-u_{\mathrm{NN}}(t))^2}
+ {\sum_{t\in{\cal T}_{\mathrm{valid}}}u_{\mathrm{NN}}(t)^2}} .
+\]
+Here \({\cal T}_{\mathrm{valid}}\) is the exact intersection of finite sample
+times, truncated at the mapper's last accepted time; no interpolation or
+nonconverged output is used.  This metric compares nonlinear FSI trajectories,
+but does not replace the prescribed-field analytical tests.
 
 \section{Retained post-fix FSI results}
 
@@ -347,22 +641,38 @@ All retained trials use \(s=50\), \(\Delta t=0.05\), \(\alpha=0.03\), 60
 coupling iterations, synchronized scaling, and \texttt{swap\_sign}.
 
 \begin{center}
-\begin{tabular}{p{48mm}p{18mm}p{22mm}p{42mm}}
+\begin{tabular}{p{40mm}p{15mm}p{18mm}p{22mm}p{43mm}}
 \toprule
-Mapper/mode & Target & Last valid & Failure\\
+Mapper/mode & Target & Last valid & \(e_{\mathrm{NN}}\) & Failure\\
 \midrule
+NearestNeighbor reference
+&4.5 s&4.50 s&0&completed\\
 BeamSplineMapper, normalized
-&4.5 s&3.05 s&structural nonconvergence, step 62 at 3.10 s\\
+&4.5 s&3.05 s&\(1.0315\times10^{-2}\)&structural nonconvergence, step 62 at 3.10 s\\
 Recovery, level 4, small
-&4.5 s&4.20 s&structural nonconvergence, step 85 at 4.25 s\\
+&4.5 s&4.20 s&\(3.8945\times10^{-2}\)&structural nonconvergence, step 85 at 4.25 s\\
 Recovery, level 4, finite
-&4.5 s&3.05 s&structural nonconvergence, step 62 at 3.10 s\\
+&4.5 s&3.05 s&\(1.0242\times10^{-2}\)&structural nonconvergence, step 62 at 3.10 s\\
 \bottomrule
 \end{tabular}
 \end{center}
 
-All three trial summaries report successful restoration.  No mapper reaches
-the 4.5 s gate, so no post-fix run was promoted to 10 or 25 s.  The finite
+The error column uses each case's own valid interval.  Since the small-recovery
+case runs longer, a fair all-beam comparison also uses the shared
+\(0.05\)--\(3.05\) s interval (61 samples): plain, recovery-small, and
+recovery-finite respectively give
+\[
+ 1.0315\times10^{-2},\qquad
+ 1.7555\times10^{-2},\qquad
+ 1.0242\times10^{-2}.
+\]
+Thus the small-mode value of \(3.8945\times10^{-2}\) over its longer
+\(0.05\)--\(4.20\) s interval must not be directly ranked against the two
+shorter values.
+
+All four trial summaries report successful restoration.  The NN reference
+completes 4.5 s, but no beam mapper reaches the 4.5 s gate, so no post-fix beam
+run was promoted to 10 or 25 s.  The finite
 recovery and normalized plain histories are almost identical at their limit:
 their point-A \(u_x\) values at \(t=3.05\) s are \(0.01611986\) and
 \(0.01612157\) m.  Recovery-small reproduces the earlier step-85 limit after
@@ -393,10 +703,18 @@ The canonical scripts are under \texttt{Scripts/}:
 \end{itemize}
 
 Current analytical results are in
-\texttt{TestCase\_Output/MapperVerification}.  Current nonlinear FSI evidence
-is restricted to the three \(t=4.5\) gate directories under
-\texttt{TestCase\_Output/StabilityTrials\_s50}.  Every numerical conclusion
-above can be reconstructed from their summaries and logs.
+\texttt{TestCase\_Output/MapperVerification}.  Each validation script defines
+its canonical output directory near the top of the file and, on rerun,
+replaces only that exact direct child of \texttt{MapperVerification}.  This
+keeps the normal invocation reproducible without accumulating versioned
+copies.  Current nonlinear FSI evidence is restricted to the NN reference and
+the three beam \(t=4.5\) gate directories under
+\texttt{TestCase\_Output/StabilityTrials\_s50}.  The FSI runner avoids
+aliasing NN point-A and point-B output streams and writes both own-valid-range
+and common-range comparisons to
+\texttt{nn\_rel\_l2\_comparison.json} and
+\texttt{nn\_rel\_l2\_comparison.csv}.  Every numerical conclusion above can
+be reconstructed from these summaries and the individual logs.
 
 \section{Remaining theoretical decisions}
 

@@ -1,0 +1,88 @@
+{
+  "classification": "structural nonlinear divergence triggered by an unbounded first coupling update",
+  "not_classified_as": [
+    "mapper algebra error",
+    "analytical transpose error",
+    "rotation factor-2 error",
+    "moment sign error",
+    "residual tolerance too strict",
+    "insufficient structural maximum iterations"
+  ],
+  "nested_convergence_conditions": {
+    "structural": {
+      "criterion": "ResidualDisplacementAndOtherDoFCriteria",
+      "condition": "(r_u <= 1e-6 or a_u < 1e-6) and (r_rotation <= 1e-6 or a_rotation < 1e-6)",
+      "maximum_iterations": 150
+    },
+    "coupling": {
+      "criterion": "relative_norm_previous_residual on fluid interface displacement",
+      "condition": "RMS(residual) < 1e-6 or ||residual||_2 / d < 1e-6, with d=||current_data||_2 unless that norm is below 1e-15, in which case d=1",
+      "maximum_iterations": 60
+    }
+  },
+  "decisive_plain_spline_evidence": {
+    "tag": "diagnose_convergence_plain_echo1_20260728_v2",
+    "failure_step": 62,
+    "failure_time": 3.1,
+    "last_valid_time": 3.05,
+    "vtk_valid": true,
+    "first_newton_residual_ratios": {
+      "iteration_1": {
+        "displacement": 55.1414,
+        "rotation": 48.585
+      },
+      "iteration_2": {
+        "displacement": 110.237,
+        "rotation": 103.471
+      },
+      "iteration_3": {
+        "displacement": 142.074,
+        "rotation": 104.632
+      },
+      "iteration_4": {
+        "displacement": "NaN",
+        "rotation": "NaN"
+      }
+    },
+    "last_complete_step_load_diagnostics": {
+      "POINT_LOAD_max_norm": 6.4528840598744095,
+      "POINT_LOAD_max_step_jump": 0.16675332128024956,
+      "POINT_MOMENT_max_norm": 0.001667591626755893,
+      "POINT_MOMENT_max_step_jump": 0.00034496455918997526,
+      "all_arrays_finite": true,
+      "interpretation": "No temporal load or moment spike exists in the last accepted VTK state; the failed-step predictor/load is not flushed to VTK."
+    }
+  },
+  "nan_mechanism": {
+    "component": "CrBeamElement3D2N::UpdateQuaternionParameters",
+    "incremental_scalar_formula": "sqrt(1 - ||delta_phi||_2^2 / 4)",
+    "validity_requirement": "||delta_phi||_2 <= 2",
+    "guard_present": false,
+    "effect": "A sufficiently large Newton rotation increment makes the square-root argument negative and contaminates quaternion, internal force, tangent and residual with NaN.",
+    "evidence_boundary": "No element instrumentation was added under the four-mapper-file scope, so delta_phi itself was not logged. The link from the diverging correction sequence to this explicit square-root failure path is a code-level inference."
+  },
+  "coupling_ordering": {
+    "predictor": "linear_derivative_based",
+    "ordering": [
+      "predict fluid interface displacement",
+      "solve fluid",
+      "map scaled fluid reaction to beam",
+      "solve structure",
+      "evaluate coupling residual",
+      "apply alpha=0.03 relaxation only if not converged"
+    ],
+    "consequence": "The configured coupling relaxation cannot protect the first structural solve of a new time step."
+  },
+  "recommended_convergence_design": [
+    "Replace the full derivative predictor by a bounded predictor or trust-region update on interface displacement.",
+    "Reject and roll back a coupling iterate immediately when the structural solver returns false or any state becomes non-finite.",
+    "Globalize the structural Newton correction so every incremental rotation remains inside the CrBeam quaternion chart; this requires solver/element work outside the four mapper files.",
+    "After stability is enforced, use a bounded adaptive accelerator to recover coupling efficiency.",
+    "Do not relax the 1e-6 convergence tolerances and do not increase 150 Newton iterations; neither can recover a NaN state."
+  ],
+  "evidence_files": {
+    "diagnostic_log": "FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/diagnose_convergence_plain_echo1_20260728_v2/BeamSplineMapper/benchmark_logs/BeamSplineMapper.log",
+    "vtk_summary": "FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/diagnose_convergence_plain_echo1_20260728_v2/BeamSplineMapper/vtk_history_csd_summary.json",
+    "vtk_manifest": "FSI_mok_Test_Case/TestCase_Output/StabilityTrials_s50/diagnose_convergence_plain_echo1_20260728_v2/BeamSplineMapper/vtk_validation_manifest.json"
+  }
+}
